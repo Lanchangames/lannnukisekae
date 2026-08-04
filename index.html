@@ -41,6 +41,9 @@
             overflow: hidden;
             background-color: #fff;
             flex-shrink: 0;
+            /* PC版でもアバターが常に追従するように設定 (改善提案2) */
+            position: sticky;
+            top: 20px;
         }
         .avatar-layer {
             position: absolute;
@@ -77,12 +80,14 @@
             background: #ccc;
             flex-shrink: 0;
         }
+        /* タイプライター演出用に改行を維持 (改善提案4) */
         #message-box {
             flex: 1;
             font-size: 16px;
             line-height: 1.5;
             display: flex;
             align-items: center;
+            white-space: pre-wrap;
         }
         /* ステータス・入力系 */
         .status-box {
@@ -143,7 +148,6 @@
             border-radius: 8px;
         }
         h3 { margin: 0 0 10px 0; color: var(--primary); }
-        h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
         
         .item-btn, .equip-btn {
             margin: 4px;
@@ -152,13 +156,10 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        /* 未開放用ボタン */
         .item-btn { background-color: #7f8c8d; }
         .item-btn:hover { background-color: #95a5a6; }
-        /* クローゼット用ボタン */
         .equip-btn { background-color: #8e44ad; }
         .equip-btn:hover { background-color: #9b59b6; }
-        /* 装備中アピール */
         .equip-btn.active-equip { background-color: #e67e22; border: 2px solid #d35400; padding: 6px 10px; }
         
         /* プレビュー枠 */
@@ -194,14 +195,67 @@
         .preview-info { flex: 1; }
         .preview-info p { margin: 5px 0 15px 0; font-size: 14px; }
         
-        /* リセットボタン追加 */
-        #btn-reset {
-            background-color: #c0392b;
-            padding: 5px 10px;
-            font-size: 12px;
-            margin-top: 10px;
+        /* タブ切り替え用デザイン (改善提案1) */
+        .tab-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 5px;
         }
-        #btn-reset:hover { background-color: #e74c3c; }
+        .tab-btn {
+            background-color: #ecf0f1;
+            color: var(--secondary);
+            border: 1px solid #bdc3c7;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* スマホ対応レスポンシブ設定 */
+        @media (max-width: 768px) {
+            #game-container {
+                flex-direction: column;
+                width: 100%;
+                box-sizing: border-box;
+                max-height: none; /* スマホではページ全体でスクロール */
+                padding: 10px;
+                gap: 10px;
+            }
+            body { padding: 0; }
+            #avatar-area {
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+                position: sticky;
+                top: 5px;
+                z-index: 100;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
+            #ui-area {
+                overflow-y: visible;
+                padding-right: 0;
+            }
+            .status-box {
+                font-size: 14px;
+                flex-wrap: wrap; /* 画面幅が狭い場合は折り返し */
+            }
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #preview-panel {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -209,7 +263,8 @@
 <div id="game-container">
     <div id="avatar-area">
         <img id="layer-bg" class="avatar-layer" src="bg.png" alt="背景">
-        <img id="layer-base" class="avatar-layer" src="base.png" alt="素体">
+        <!-- avator.png への名称変更を適用 -->
+        <img id="layer-base" class="avatar-layer" src="avator.png" alt="素体">
         <img id="layer-clothes" class="avatar-layer" src="clothes_1.png" alt="服">
         <img id="layer-hair" class="avatar-layer" src="hair.png" alt="髪">
         <img id="layer-acc" class="avatar-layer" src="" alt="アクセ" style="display:none;">
@@ -218,7 +273,7 @@
     <div id="ui-area">
         <div id="lancelot-area">
             <img id="lancelot-img" src="lancelot.png" alt="ランスロット" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNDAiIHk9IjQ1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+Tk8gSU1BR0U8L3RleHQ+PC9zdmc+'">
-            <div id="message-box">お疲れさま。今日も古戦場を走るんだな。<br>報告を待っているぞ。</div>
+            <div id="message-box"></div> <!-- テキストはJSのタイプライターで注入します -->
         </div>
 
         <div class="status-box">
@@ -234,8 +289,15 @@
         </div>
         <div id="cooldown-text"></div>
 
+        <!-- タブ切り替えUI -->
+        <div class="tab-container" style="margin-top: 10px;">
+            <button class="tab-btn active" id="tab-clothes" onclick="changeTab('clothes')">衣装</button>
+            <button class="tab-btn" id="tab-acc" onclick="changeTab('acc')">アクセサリー</button>
+            <button class="tab-btn" id="tab-bg" onclick="changeTab('bg')">背景</button>
+        </div>
+
         <!-- 動的生成される クローゼット ＆ 未開放 リスト -->
-        <div class="shop-area">
+        <div class="shop-area" style="border-top: none; padding-top: 0;">
             <h3>クローゼット (解放済み)</h3>
             <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます（デフォルトに戻ります）</p>
             <div id="unlocked-list"></div>
@@ -257,10 +319,7 @@
         </div>
 
         <div class="shop-area">
-            <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                <h3>未解放アイテム</h3>
-                <button id="btn-reset" onclick="resetSaveData()">セーブデータを消去する</button>
-            </div>
+            <h3>未解放アイテム</h3>
             <div id="locked-list"></div>
         </div>
     </div>
@@ -321,14 +380,11 @@
         unlocked: {}
     };
 
-    // 初期化 (全て未解放)
-    ['clothes', 'acc', 'bg'].forEach(cat => {
-        ITEM_DB[cat].forEach(item => state.unlocked[item.id] = false);
-    });
-
+    let currentTab = 'clothes'; // 現在のタブ
     const COOLDOWN_MS = 60 * 60 * 10; // テスト用
     let previewTarget = null;
     let timerInterval = null;
+    let typeWriterTimeout = null; // タイプライター用タイマー
 
     // --- ローカルストレージ（セーブ・ロード処理） ---
     const SAVE_KEY_STATE = 'kosenjo_save_state';
@@ -345,7 +401,6 @@
         
         if (savedState) {
             const parsedState = JSON.parse(savedState);
-            // 既存のstateとマージ（新しいアイテムが追加されてもエラーにならないように）
             state = { ...state, ...parsedState };
             if (parsedState.unlocked) {
                 state.unlocked = { ...state.unlocked, ...parsedState.unlocked };
@@ -355,16 +410,7 @@
             currentEquip = { ...currentEquip, ...JSON.parse(savedEquip) };
         }
         
-        // 読み込んだ装備をアバターに反映
         ['clothes', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
-    }
-
-    function resetSaveData() {
-        if (confirm("セーブデータを消去して最初からやり直しますか？")) {
-            localStorage.removeItem(SAVE_KEY_STATE);
-            localStorage.removeItem(SAVE_KEY_EQUIP);
-            location.reload(); // 画面をリロードして初期化
-        }
     }
 
     // --- セリフ集 ---
@@ -385,6 +431,14 @@
         }
     }
 
+    // --- タブ切り替え処理 ---
+    function changeTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        renderItems();
+    }
+
     // --- クローゼット・未解放リストの動的描画 ---
     function renderItems() {
         const lockedContainer = document.getElementById('locked-list');
@@ -393,44 +447,41 @@
         lockedContainer.innerHTML = '';
         unlockedContainer.innerHTML = '';
 
-        ['clothes', 'acc', 'bg'].forEach(category => {
-            let hasLocked = false;
-            
-            const catUnlocked = document.createElement('div');
-            catUnlocked.className = 'shop-category';
-            catUnlocked.innerHTML = `<h4>${categoryNames[category]}</h4>`;
-            
-            const defBtn = document.createElement('button');
-            const isDefEquipped = currentEquip[category] === defaultEquip[category];
-            defBtn.className = isDefEquipped ? 'equip-btn active-equip' : 'equip-btn';
-            defBtn.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
-            defBtn.onclick = () => toggleEquip(category, defaultEquip[category]);
-            catUnlocked.appendChild(defBtn);
+        const category = currentTab;
+        let hasLocked = false;
+        
+        const catUnlocked = document.createElement('div');
+        catUnlocked.className = 'shop-category';
+        
+        const defBtn = document.createElement('button');
+        const isDefEquipped = currentEquip[category] === defaultEquip[category];
+        defBtn.className = isDefEquipped ? 'equip-btn active-equip' : 'equip-btn';
+        defBtn.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
+        defBtn.onclick = () => toggleEquip(category, defaultEquip[category]);
+        catUnlocked.appendChild(defBtn);
 
-            const catLocked = document.createElement('div');
-            catLocked.className = 'shop-category';
-            catLocked.innerHTML = `<h4>${categoryNames[category]}</h4>`;
+        const catLocked = document.createElement('div');
+        catLocked.className = 'shop-category';
 
-            ITEM_DB[category].forEach(item => {
-                const btn = document.createElement('button');
-                if (state.unlocked[item.id]) {
-                    const isEquipped = currentEquip[category] === item.file;
-                    btn.className = isEquipped ? 'equip-btn active-equip' : 'equip-btn';
-                    btn.innerText = item.name;
-                    btn.onclick = () => toggleEquip(item.type, item.file);
-                    catUnlocked.appendChild(btn);
-                } else {
-                    btn.className = 'item-btn';
-                    btn.innerText = item.name;
-                    btn.onclick = () => showPreview(item);
-                    catLocked.appendChild(btn);
-                    hasLocked = true;
-                }
-            });
-
-            unlockedContainer.appendChild(catUnlocked);
-            if (hasLocked) lockedContainer.appendChild(catLocked);
+        ITEM_DB[category].forEach(item => {
+            const btn = document.createElement('button');
+            if (state.unlocked[item.id]) {
+                const isEquipped = currentEquip[category] === item.file;
+                btn.className = isEquipped ? 'equip-btn active-equip' : 'equip-btn';
+                btn.innerText = item.name;
+                btn.onclick = () => toggleEquip(item.type, item.file);
+                catUnlocked.appendChild(btn);
+            } else {
+                btn.className = 'item-btn';
+                btn.innerText = item.name;
+                btn.onclick = () => showPreview(item);
+                catLocked.appendChild(btn);
+                hasLocked = true;
+            }
         });
+
+        unlockedContainer.appendChild(catUnlocked);
+        if (hasLocked) lockedContainer.appendChild(catLocked);
     }
 
     // --- アバター画像の適用 ---
@@ -454,7 +505,7 @@
         
         applyAvatarImage(type, currentEquip[type]);
         renderItems();
-        saveGame(); // 着せ替えたらセーブ
+        saveGame();
     }
 
     // --- プレビュー機能 ---
@@ -487,7 +538,7 @@
         
         updateUI();
         renderItems();
-        saveGame(); // アイテムを購入したらセーブ
+        saveGame();
     }
 
     // --- 貢献度報告 ---
@@ -538,11 +589,26 @@
         document.getElementById('input-score').value = '';
         updateUI();
         startCooldownTimer();
-        saveGame(); // 報告が完了したらセーブ
+        saveGame();
     }
 
+    // --- メッセージ（タイプライター演出） ---
     function setLancelotMessage(msg) {
-        document.getElementById('message-box').innerHTML = msg;
+        const box = document.getElementById('message-box');
+        box.innerText = '';
+        
+        // 既存のタイマーがあればリセット
+        if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+        
+        let i = 0;
+        function type() {
+            if (i < msg.length) {
+                box.innerText += msg.charAt(i);
+                i++;
+                typeWriterTimeout = setTimeout(type, 40); // 1文字あたりの表示スピード
+            }
+        }
+        type();
     }
 
     function startCooldownTimer() {
@@ -565,11 +631,23 @@
         }, 1000);
     }
 
-    // --- 初期ロード ---
-    loadGame(); // ロード処理を最優先で実行
+    // --- 初期化 ---
+    ['clothes', 'acc', 'bg'].forEach(cat => {
+        ITEM_DB[cat].forEach(item => {
+            if (state.unlocked[item.id] === undefined) {
+                state.unlocked[item.id] = false;
+            }
+        });
+    });
+
+    // ロード＆UI初期化
+    loadGame();
     updateUI();
     renderItems();
-    startCooldownTimer(); // ロードした時間に基づいてクールタイムを計算
+    startCooldownTimer();
+    
+    // 最初のメッセージをタイプライターで表示
+    setLancelotMessage("お疲れさま。今日も古戦場を走るんだな。\n報告を待っているぞ。");
 </script>
 
 </body>
