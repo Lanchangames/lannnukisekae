@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>団長、お疲れさまです！</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --bg: #ecf0f1;
+            --text: #333;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        #game-container {
+            display: flex;
+            gap: 20px;
+            width: 950px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-height: 90vh;
+        }
+        /* アバターエリア (左側) */
+        #avatar-area {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            flex-shrink: 0;
+        }
+        .avatar-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+        /* メインUIエリア (右側) */
+        #ui-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        #lancelot-area {
+            display: flex;
+            gap: 10px;
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--accent);
+            flex-shrink: 0;
+        }
+        #lancelot-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: #ccc;
+            flex-shrink: 0;
+        }
+        #message-box {
+            flex: 1;
+            font-size: 16px;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+        }
+        /* ステータス・入力系 */
+        .status-box {
+            display: flex;
+            justify-content: space-between;
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        input[type="number"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex: 1;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        #cooldown-text {
+            color: #e74c3c;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        /* ショップ・クローゼットUI */
+        .shop-area {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .shop-category {
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        h3 { margin: 0 0 10px 0; color: var(--primary); }
+        h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
+        
+        .item-btn, .equip-btn {
+            margin: 4px;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* 未開放用ボタン */
+        .item-btn { background-color: #7f8c8d; }
+        .item-btn:hover { background-color: #95a5a6; }
+        /* クローゼット用ボタン */
+        .equip-btn { background-color: #8e44ad; }
+        .equip-btn:hover { background-color: #9b59b6; }
+        /* 装備中アピール */
+        .equip-btn.active-equip { background-color: #e67e22; border: 2px solid #d35400; padding: 6px 10px; }
+        
+        /* プレビュー枠 */
+        #preview-panel {
+            display: flex;
+            gap: 15px;
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        #preview-img-container {
+            width: 100px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.7);
+            background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #preview-img {
+            max-width: 90%;
+            max-height: 90%;
+            display: none;
+            object-fit: contain;
+        }
+        .preview-info { flex: 1; }
+        .preview-info p { margin: 5px 0 15px 0; font-size: 14px; }
+        
+        /* リセットボタン追加 */
+        #btn-reset {
+            background-color: #c0392b;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        #btn-reset:hover { background-color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="avatar-area">
+        <img id="layer-bg" class="avatar-layer" src="bg.png" alt="背景">
+        <img id="layer-base" class="avatar-layer" src="base.png" alt="素体">
+        <img id="layer-clothes" class="avatar-layer" src="clothes_1.png" alt="服">
+        <img id="layer-hair" class="avatar-layer" src="hair.png" alt="髪">
+        <img id="layer-acc" class="avatar-layer" src="" alt="アクセ" style="display:none;">
+    </div>
+
+    <div id="ui-area">
+        <div id="lancelot-area">
+            <img id="lancelot-img" src="lancelot.png" alt="ランスロット" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNDAiIHk9IjQ1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+Tk8gSU1BR0U8L3RleHQ+PC9zdmc+'">
+            <div id="message-box">お疲れさま。今日も古戦場を走るんだな。<br>報告を待っているぞ。</div>
+        </div>
+
+        <div class="status-box">
+            <span>累計貢献度: <span id="val-total">0</span></span>
+            <span>報告回数: <span id="val-reports">0</span>回</span>
+            <span>コイン: <span id="val-coins">0</span></span>
+            <span>親愛度: <span id="val-affection">0</span></span>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="input-score" placeholder="現在の累計貢献度を入力">
+            <button id="btn-report" onclick="reportScore()">報告する</button>
+        </div>
+        <div id="cooldown-text"></div>
+
+        <!-- 動的生成される クローゼット ＆ 未開放 リスト -->
+        <div class="shop-area">
+            <h3>クローゼット (解放済み)</h3>
+            <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます（デフォルトに戻ります）</p>
+            <div id="unlocked-list"></div>
+        </div>
+
+        <!-- プレビュー枠 -->
+        <div class="shop-area" id="preview-section" style="padding-top: 5px;">
+            <h3>アイテムプレビュー</h3>
+            <div id="preview-panel">
+                <div id="preview-img-container">
+                    <img id="preview-img" src="">
+                </div>
+                <div class="preview-info">
+                    <h4 id="preview-name" style="font-size: 16px; margin:0;">アイテムを選択してください</h4>
+                    <p id="preview-desc">未解放リストからアイテムを選ぶと、絵柄を確認できます。</p>
+                    <button id="btn-buy-preview" style="display:none; background-color: #27ae60;" onclick="buyPreviewItem()">500コインで解放</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="shop-area">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <h3>未解放アイテム</h3>
+                <button id="btn-reset" onclick="resetSaveData()">セーブデータを消去する</button>
+            </div>
+            <div id="locked-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- データベース管理 ---
+    const ITEM_DB = {
+        clothes: [
+            { id: 'clothes2', name: '騎士風衣装', file: 'clothes_2.png', type: 'clothes' },
+            { id: 'clothes3', name: '団員制服', file: 'clothes_3.png', type: 'clothes' },
+            { id: 'clothes4', name: 'カフェ店員', file: 'clothes_4.png', type: 'clothes' },
+            { id: 'clothes5', name: 'お出かけ服', file: 'clothes_5.png', type: 'clothes' },
+            { id: 'clothes6', name: 'パジャマ', file: 'clothes_6.png', type: 'clothes' },
+            { id: 'clothes7', name: '水着', file: 'clothes_7.png', type: 'clothes' },
+            { id: 'clothes8', name: 'ハロウィン', file: 'clothes_8.png', type: 'clothes' },
+            { id: 'clothes9', name: 'クリスマス', file: 'clothes_9.png', type: 'clothes' },
+            { id: 'clothes10', name: 'ドレス', file: 'clothes_10.png', type: 'clothes' },
+            { id: 'clothes11', name: '部屋着', file: 'clothes_11.png', type: 'clothes' }
+        ],
+        acc: [
+            { id: 'acc1', name: 'リボン', file: 'acc_1.png', type: 'acc' },
+            { id: 'acc2', name: '帽子', file: 'acc_2.png', type: 'acc' },
+            { id: 'acc3', name: 'メガネ', file: 'acc_3.png', type: 'acc' },
+            { id: 'acc4', name: '花飾り', file: 'acc_4.png', type: 'acc' },
+            { id: 'acc5', name: 'マフラー', file: 'acc_5.png', type: 'acc' },
+            { id: 'acc6', name: '羽飾り', file: 'acc_6.png', type: 'acc' },
+            { id: 'acc7', name: 'ピアス', file: 'acc_7.png', type: 'acc' },
+            { id: 'acc8', name: '眼帯', file: 'acc_8.png', type: 'acc' },
+            { id: 'acc9', name: 'チョーカー', file: 'acc_9.png', type: 'acc' },
+            { id: 'acc10', name: 'ぬいぐるみ', file: 'acc_10.png', type: 'acc' }
+        ],
+        bg: [
+            { id: 'bg1', name: '団長室', file: 'bg_1.png', type: 'bg' },
+            { id: 'bg2', name: '甲板', file: 'bg_2.png', type: 'bg' },
+            { id: 'bg3', name: '青空', file: 'bg_3.png', type: 'bg' },
+            { id: 'bg4', name: '夜空', file: 'bg_4.png', type: 'bg' },
+            { id: 'bg5', name: '雪景色', file: 'bg_5.png', type: 'bg' },
+            { id: 'bg6', name: 'ティールーム', file: 'bg_6.png', type: 'bg' },
+            { id: 'bg7', name: '街角', file: 'bg_7.png', type: 'bg' },
+            { id: 'bg8', name: '森', file: 'bg_8.png', type: 'bg' },
+            { id: 'bg9', name: 'ビーチ', file: 'bg_9.png', type: 'bg' },
+            { id: 'bg10', name: '王城', file: 'bg_10.png', type: 'bg' }
+        ]
+    };
+
+    const categoryNames = { clothes: "衣装", acc: "アクセサリー", bg: "背景" };
+    const defaultEquip = { clothes: 'clothes_1.png', acc: '', bg: 'bg.png' };
+    
+    // --- ゲームステータスと装備状況 ---
+    let currentEquip = { clothes: 'clothes_1.png', acc: '', bg: 'bg.png' };
+    let state = {
+        totalScore: 0,
+        reportCount: 0,
+        coins: 0,
+        affection: 0,
+        lastReportTime: 0,
+        unlocked: {}
+    };
+
+    // 初期化 (全て未解放)
+    ['clothes', 'acc', 'bg'].forEach(cat => {
+        ITEM_DB[cat].forEach(item => state.unlocked[item.id] = false);
+    });
+
+    const COOLDOWN_MS = 60 * 60 * 10; // テスト用
+    let previewTarget = null;
+    let timerInterval = null;
+
+    // --- ローカルストレージ（セーブ・ロード処理） ---
+    const SAVE_KEY_STATE = 'kosenjo_save_state';
+    const SAVE_KEY_EQUIP = 'kosenjo_save_equip';
+
+    function saveGame() {
+        localStorage.setItem(SAVE_KEY_STATE, JSON.stringify(state));
+        localStorage.setItem(SAVE_KEY_EQUIP, JSON.stringify(currentEquip));
+    }
+
+    function loadGame() {
+        const savedState = localStorage.getItem(SAVE_KEY_STATE);
+        const savedEquip = localStorage.getItem(SAVE_KEY_EQUIP);
+        
+        if (savedState) {
+            const parsedState = JSON.parse(savedState);
+            // 既存のstateとマージ（新しいアイテムが追加されてもエラーにならないように）
+            state = { ...state, ...parsedState };
+            if (parsedState.unlocked) {
+                state.unlocked = { ...state.unlocked, ...parsedState.unlocked };
+            }
+        }
+        if (savedEquip) {
+            currentEquip = { ...currentEquip, ...JSON.parse(savedEquip) };
+        }
+        
+        // 読み込んだ装備をアバターに反映
+        ['clothes', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
+    }
+
+    function resetSaveData() {
+        if (confirm("セーブデータを消去して最初からやり直しますか？")) {
+            localStorage.removeItem(SAVE_KEY_STATE);
+            localStorage.removeItem(SAVE_KEY_EQUIP);
+            location.reload(); // 画面をリロードして初期化
+        }
+    }
+
+    // --- セリフ集 ---
+    const msgsProgress = [
+        "お疲れさま。まずは順調な滑り出しだな。", "よし、いいペースだ。私も負けていられないな。", "報告ご苦労。君の采配にはいつも助けられている。", "着実に進んでいるな。この調子で頼む。", "疲れは出ていないか？適度な休憩も任務のうちだぞ。", "順調そのものだな。白竜騎士団も君に続こう。", "素晴らしい集中力だ。だが、無理だけはするなよ。", "君の頑張りは私が一番よく分かっている。いつもありがとう。", "ふふ、君が指揮を執ると皆の士気も違う。頼もしいよ。", "少し休まないか？私がとっておきの紅茶を淹れよう。", "よし、ひと区切りだな。お茶菓子も用意してあるぞ。", "君の隣にいると、私も不思議と力が湧いてくるんだ。", "団長、いつもお疲れ様。たまには私を頼ってくれていいんだぞ。", "君がいてくれるから、前へ進める。…ありがとう。", "今日は随分と頑張ったな。終わったら、甘いものでも食べに行かないか？", "凄まじい勢いだ。君の背中は、まるで誰かを導く光のようだな。", "素晴らしい。君の熱意にはいつも驚かされるばかりだ。", "これほどの戦果を挙げるとは。君は本当に誇り高き団長だ。", "君の努力には頭が下がる。どうか、その身を大切にしてくれ。", "君と共に戦えること、白竜騎士団長として誇りに思う。", "見事だ。だが、君が倒れたら皆が悲しむ。息抜きも忘れるなよ。", "まさかここまでやるとは…君の采配は神懸っているな。", "君の力になれるなら、私はどこまででも付き合うぞ。", "鬼神の如き活躍だな。だが、少し休んで私の淹れた茶を飲んでくれ。", "ここまで来れたのは君のおかげだ。最後まで、全力で支えよう。", "どんな困難な戦いも、君となら越えていける。そう確信している。", "君の隣は居心地がいい。…これからも、ずっと共に走らせてくれ。", "圧倒的だな。君の軌跡は、きっと後世に語り継がれるだろう。", "さあ、いよいよ大詰めだ。君の望む結末へ、共に駆け抜けよう！", "到達したな。君は最高の団長であり、私の誇り高き戦友だ。本当にお疲れ様！"
+    ];
+
+    // --- UI更新関連 ---
+    function updateUI() {
+        document.getElementById('val-total').innerText = state.totalScore.toLocaleString();
+        document.getElementById('val-reports').innerText = state.reportCount;
+        document.getElementById('val-coins').innerText = state.coins;
+        document.getElementById('val-affection').innerText = state.affection;
+
+        const previewBtn = document.getElementById('btn-buy-preview');
+        if(previewBtn && previewTarget) {
+            previewBtn.disabled = state.coins < 500;
+        }
+    }
+
+    // --- クローゼット・未解放リストの動的描画 ---
+    function renderItems() {
+        const lockedContainer = document.getElementById('locked-list');
+        const unlockedContainer = document.getElementById('unlocked-list');
+        
+        lockedContainer.innerHTML = '';
+        unlockedContainer.innerHTML = '';
+
+        ['clothes', 'acc', 'bg'].forEach(category => {
+            let hasLocked = false;
+            
+            const catUnlocked = document.createElement('div');
+            catUnlocked.className = 'shop-category';
+            catUnlocked.innerHTML = `<h4>${categoryNames[category]}</h4>`;
+            
+            const defBtn = document.createElement('button');
+            const isDefEquipped = currentEquip[category] === defaultEquip[category];
+            defBtn.className = isDefEquipped ? 'equip-btn active-equip' : 'equip-btn';
+            defBtn.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
+            defBtn.onclick = () => toggleEquip(category, defaultEquip[category]);
+            catUnlocked.appendChild(defBtn);
+
+            const catLocked = document.createElement('div');
+            catLocked.className = 'shop-category';
+            catLocked.innerHTML = `<h4>${categoryNames[category]}</h4>`;
+
+            ITEM_DB[category].forEach(item => {
+                const btn = document.createElement('button');
+                if (state.unlocked[item.id]) {
+                    const isEquipped = currentEquip[category] === item.file;
+                    btn.className = isEquipped ? 'equip-btn active-equip' : 'equip-btn';
+                    btn.innerText = item.name;
+                    btn.onclick = () => toggleEquip(item.type, item.file);
+                    catUnlocked.appendChild(btn);
+                } else {
+                    btn.className = 'item-btn';
+                    btn.innerText = item.name;
+                    btn.onclick = () => showPreview(item);
+                    catLocked.appendChild(btn);
+                    hasLocked = true;
+                }
+            });
+
+            unlockedContainer.appendChild(catUnlocked);
+            if (hasLocked) lockedContainer.appendChild(catLocked);
+        });
+    }
+
+    // --- アバター画像の適用 ---
+    function applyAvatarImage(type, file) {
+        const layer = document.getElementById(`layer-${type}`);
+        if (file === '') {
+            layer.style.display = 'none';
+        } else {
+            layer.src = file;
+            layer.style.display = 'block';
+        }
+    }
+
+    // --- 装備のトグル（オンオフ）処理 ---
+    function toggleEquip(type, file) {
+        if (currentEquip[type] === file && file !== defaultEquip[type]) {
+            currentEquip[type] = defaultEquip[type];
+        } else {
+            currentEquip[type] = file;
+        }
+        
+        applyAvatarImage(type, currentEquip[type]);
+        renderItems();
+        saveGame(); // 着せ替えたらセーブ
+    }
+
+    // --- プレビュー機能 ---
+    function showPreview(item) {
+        previewTarget = item;
+        const img = document.getElementById('preview-img');
+        img.src = item.file;
+        img.style.display = 'block';
+        
+        document.getElementById('preview-name').innerText = item.name;
+        document.getElementById('preview-desc').innerText = `絵柄を確認中。500コインでクローゼットに追加できます。`;
+        
+        const buyBtn = document.getElementById('btn-buy-preview');
+        buyBtn.style.display = 'inline-block';
+        buyBtn.disabled = state.coins < 500;
+    }
+
+    function buyPreviewItem() {
+        if (!previewTarget || state.coins < 500) return;
+        
+        state.coins -= 500;
+        state.unlocked[previewTarget.id] = true;
+        setLancelotMessage(`新しいアイテム「${previewTarget.name}」を手に入れたな。クローゼットに入れておいたぞ。`);
+        
+        previewTarget = null;
+        document.getElementById('preview-img').style.display = 'none';
+        document.getElementById('preview-name').innerText = 'アイテムを選択してください';
+        document.getElementById('preview-desc').innerText = '未解放リストからアイテムを選ぶと、絵柄を確認できます。';
+        document.getElementById('btn-buy-preview').style.display = 'none';
+        
+        updateUI();
+        renderItems();
+        saveGame(); // アイテムを購入したらセーブ
+    }
+
+    // --- 貢献度報告 ---
+    function reportScore() {
+        const inputVal = parseInt(document.getElementById('input-score').value, 10);
+        
+        if (isNaN(inputVal) || inputVal <= state.totalScore) {
+            setLancelotMessage("前回より貢献度が増えていないようだが…入力ミスではないか？");
+            return;
+        }
+
+        const now = Date.now();
+        if (now - state.lastReportTime < COOLDOWN_MS && state.lastReportTime !== 0) {
+            const remainMin = Math.ceil((COOLDOWN_MS - (now - state.lastReportTime)) / 1000 / 60);
+            setLancelotMessage(`少し休憩したらどうだ？ 次の報告まであと ${remainMin} 分だ。`);
+            return;
+        }
+
+        const diff = inputVal - state.totalScore;
+        
+        let isOverwork = false;
+        if (state.lastReportTime !== 0) {
+            const timeDiffMs = now - state.lastReportTime;
+            const hours = timeDiffMs / (1000 * 60 * 60);
+            if (hours > 0 && (diff / hours) >= 1000000000) {
+                isOverwork = true;
+            }
+        }
+
+        state.totalScore = inputVal;
+        state.lastReportTime = now;
+        state.reportCount++;
+        
+        const earnedCoins = 200 + (state.reportCount * 50);
+        const earnedAffection = 10;
+
+        state.coins += earnedCoins;
+        state.affection += earnedAffection;
+
+        if (isOverwork) {
+            setLancelotMessage("……本当か？いくら君でもそのペースは信じがたい。無理をして倒れては元も子もないぞ、絶対に休むんだ。");
+        } else {
+            const maxScore = 10000000000;
+            const rank = Math.min(29, Math.floor((state.totalScore / maxScore) * 30));
+            setLancelotMessage(msgsProgress[rank]);
+        }
+
+        document.getElementById('input-score').value = '';
+        updateUI();
+        startCooldownTimer();
+        saveGame(); // 報告が完了したらセーブ
+    }
+
+    function setLancelotMessage(msg) {
+        document.getElementById('message-box').innerHTML = msg;
+    }
+
+    function startCooldownTimer() {
+        if(timerInterval) clearInterval(timerInterval);
+        
+        timerInterval = setInterval(() => {
+            const now = Date.now();
+            const diff = COOLDOWN_MS - (now - state.lastReportTime);
+            
+            if (state.lastReportTime === 0 || diff <= 0) {
+                document.getElementById('cooldown-text').innerText = "報告可能です！";
+                document.getElementById('btn-report').disabled = false;
+                clearInterval(timerInterval);
+            } else {
+                const min = Math.floor(diff / 1000 / 60);
+                const sec = Math.floor((diff / 1000) % 60);
+                document.getElementById('cooldown-text').innerText = `次の報告まで: ${min}分 ${sec}秒`;
+                document.getElementById('btn-report').disabled = true;
+            }
+        }, 1000);
+    }
+
+    // --- 初期ロード ---
+    loadGame(); // ロード処理を最優先で実行
+    updateUI();
+    renderItems();
+    startCooldownTimer(); // ロードした時間に基づいてクールタイムを計算
+</script>
+
+</body>
+</html>
