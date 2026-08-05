@@ -64,7 +64,7 @@
         }
         /* アバターエリア (左側) */
         #avatar-area {
-            position: relative;
+            position: relative; /* 追従(sticky)を解除し、通常の配置に戻しました */
             width: 300px;
             height: 400px;
             border: 2px solid #bdc3c7;
@@ -72,9 +72,6 @@
             overflow: hidden;
             background-color: #fff;
             flex-shrink: 0;
-            /* PCでもスクロールに追従させる */
-            position: sticky;
-            top: 20px;
         }
         .avatar-layer {
             position: absolute;
@@ -271,14 +268,12 @@
             
             #avatar-area {
                 width: 100%;
-                /* 圧迫感を無くすため、スマホ画面時のみ比率を保ったまま縮小 */
+                /* 圧迫感を無くすため縮小 */
                 max-width: 210px;
                 height: 280px; 
                 margin: 0 auto;
-                position: sticky;
-                top: 5px;
-                z-index: 100;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                /* sticky と 影を削除し、文書内に素直に配置（固定）されるように変更 */
+                position: relative;
             }
             #ui-area {
                 overflow-y: visible;
@@ -341,11 +336,11 @@
     <div id="start-box">
         <!-- logo.png がない場合のプレビュー用onerrorを仕込んでいます -->
         <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
-        <h2 style="color: var(--primary); margin-top: 0;">団長、お疲れさまです！</h2>
+        <h2 style="color: var(--primary); margin-top: 0;">団長、お疲れさま！</h2>
         <p style="line-height: 1.6; margin-bottom: 30px; font-size: 15px; color: #555;">
             古戦場の累計貢献度を報告してコインを獲得し、<br>
             アイテムを解放して自由に着せ替えを楽しもう！<br>
-            <span style="font-size: 12px;">（※無理のないペースでご報告ください）</span>
+            <span style="font-size: 12px;">※ブラウザの履歴削除を行うとセーブデータが消えます</span>
         </p>
         <button onclick="startGame()" style="font-size: 18px; padding: 12px 40px; border-radius: 30px;">ゲームスタート</button>
     </div>
@@ -388,25 +383,36 @@
                 <button id="btn-report" onclick="reportScore()">報告する</button>
             </div>
             <div id="cooldown-text"></div>
+
+            <!-- クローゼットをルーム画面に移動 -->
+            <div class="shop-area" style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+                <h3>クローゼット</h3>
+                <div class="tab-container" style="margin-bottom: 10px;">
+                    <button class="tab-btn active" id="tab-clothes-room" onclick="changeRoomTab('clothes')">衣装</button>
+                    <button class="tab-btn" id="tab-acc-room" onclick="changeRoomTab('acc')">アクセサリー</button>
+                    <button class="tab-btn" id="tab-bg-room" onclick="changeRoomTab('bg')">背景</button>
+                </div>
+                <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます</p>
+                <div id="unlocked-list"></div>
+            </div>
         </div>
 
         <!-- ショップ・クローゼット画面の要素 -->
         <div id="section-shop">
             
+            <!-- ショップ画面用のコイン表示を追加 -->
+            <div class="status-box" style="margin-bottom: 15px;">
+                <span>所持コイン: <span id="val-coins-shop">0</span></span>
+            </div>
+
             <!-- ショップ内カテゴリタブ -->
-            <div class="tab-container" style="margin-top: 10px;">
-                <button class="tab-btn active" id="tab-clothes" onclick="changeTab('clothes')">衣装</button>
-                <button class="tab-btn" id="tab-acc" onclick="changeTab('acc')">アクセサリー</button>
-                <button class="tab-btn" id="tab-bg" onclick="changeTab('bg')">背景</button>
+            <div class="tab-container">
+                <button class="tab-btn active" id="tab-clothes-shop" onclick="changeShopTab('clothes')">衣装</button>
+                <button class="tab-btn" id="tab-acc-shop" onclick="changeShopTab('acc')">アクセサリー</button>
+                <button class="tab-btn" id="tab-bg-shop" onclick="changeShopTab('bg')">背景</button>
             </div>
 
-            <div class="shop-area" style="border-top: none; padding-top: 0;">
-                <h3>クローゼット (解放済み)</h3>
-                <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます（デフォルトに戻ります）</p>
-                <div id="unlocked-list"></div>
-            </div>
-
-            <div class="shop-area" id="preview-section" style="padding-top: 5px;">
+            <div class="shop-area" id="preview-section" style="padding-top: 5px; border-top: none;">
                 <h3>アイテムプレビュー</h3>
                 <div id="preview-panel">
                     <div id="preview-img-container">
@@ -457,9 +463,9 @@
             { id: 'acc10', name: 'ぬいぐるみ', file: 'acc_10.png', type: 'acc' }
         ],
         bg: [
-            { id: 'bg1', name: '団長室', file: 'bg_1.png', type: 'bg' },
-            { id: 'bg2', name: '甲板', file: 'bg_2.png', type: 'bg' },
-            { id: 'bg3', name: '青空', file: 'bg_3.png', type: 'bg' },
+            { id: 'bg1', name: 'ブルー', file: 'bg_1.png', type: 'bg' },
+            { id: 'bg2', name: 'ピンク', file: 'bg_2.png', type: 'bg' },
+            { id: 'bg3', name: 'イエロー', file: 'bg_3.png', type: 'bg' },
             { id: 'bg4', name: '夜空', file: 'bg_4.png', type: 'bg' },
             { id: 'bg5', name: '雪景色', file: 'bg_5.png', type: 'bg' },
             { id: 'bg6', name: 'ティールーム', file: 'bg_6.png', type: 'bg' },
@@ -484,7 +490,9 @@
         unlocked: {}
     };
 
-    let currentTab = 'clothes'; // ショップ内の現在タブ
+    let currentRoomTab = 'clothes'; // ルーム画面用タブ
+    let currentShopTab = 'clothes'; // ショップ画面用タブ
+
     const COOLDOWN_MS = 60 * 60 * 10; // テスト用
     let previewTarget = null;
     let timerInterval = null;
@@ -527,11 +535,33 @@
         document.getElementById('val-total').innerText = state.totalScore.toLocaleString();
         document.getElementById('val-reports').innerText = state.reportCount;
         document.getElementById('val-coins').innerText = state.coins;
+        
+        // ショップ画面用のコイン表示も更新
+        const shopCoins = document.getElementById('val-coins-shop');
+        if(shopCoins) shopCoins.innerText = state.coins;
+
         document.getElementById('val-affection').innerText = state.affection;
+
+        // 親愛度による画像の更新
+        updateLancelotImage();
 
         const previewBtn = document.getElementById('btn-buy-preview');
         if(previewBtn && previewTarget) {
             previewBtn.disabled = state.coins < 500;
+        }
+    }
+
+    // --- キャラクター画像更新 (親愛度による切り替え) ---
+    function updateLancelotImage() {
+        const img = document.getElementById('lancelot-img');
+        
+        // 親愛度の数値や読み込む画像ファイル名はここでお好きなように変更できます
+        if (state.affection >= 100) {
+            img.src = 'lancelot_3.png'; // 親愛度100以上
+        } else if (state.affection >= 50) {
+            img.src = 'lancelot_2.png'; // 親愛度50以上
+        } else {
+            img.src = 'lancelot.png';   // 初期状態（親愛度50未満）
         }
     }
 
@@ -554,24 +584,27 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- ショップ内カテゴリタブ切り替え ---
-    function changeTab(tab) {
-        currentTab = tab;
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`tab-${tab}`).classList.add('active');
-        renderItems();
+    // --- ルーム側カテゴリタブ切り替え ---
+    function changeRoomTab(tab) {
+        currentRoomTab = tab;
+        document.querySelectorAll('#section-main .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${tab}-room`).classList.add('active');
+        renderRoomItems();
     }
 
-    // --- クローゼット・未解放リストの動的描画 ---
-    function renderItems() {
-        const lockedContainer = document.getElementById('locked-list');
-        const unlockedContainer = document.getElementById('unlocked-list');
-        
-        lockedContainer.innerHTML = '';
-        unlockedContainer.innerHTML = '';
+    // --- ショップ側カテゴリタブ切り替え ---
+    function changeShopTab(tab) {
+        currentShopTab = tab;
+        document.querySelectorAll('#section-shop .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${tab}-shop`).classList.add('active');
+        renderShopItems();
+    }
 
-        const category = currentTab;
-        let hasLocked = false;
+    // --- クローゼット(ルーム画面)の描画 ---
+    function renderRoomItems() {
+        const unlockedContainer = document.getElementById('unlocked-list');
+        unlockedContainer.innerHTML = '';
+        const category = currentRoomTab;
         
         const catUnlocked = document.createElement('div');
         catUnlocked.className = 'shop-category';
@@ -583,18 +616,32 @@
         defBtn.onclick = () => toggleEquip(category, defaultEquip[category]);
         catUnlocked.appendChild(defBtn);
 
-        const catLocked = document.createElement('div');
-        catLocked.className = 'shop-category';
-
         ITEM_DB[category].forEach(item => {
-            const btn = document.createElement('button');
             if (state.unlocked[item.id]) {
                 const isEquipped = currentEquip[category] === item.file;
+                const btn = document.createElement('button');
                 btn.className = isEquipped ? 'equip-btn active-equip' : 'equip-btn';
                 btn.innerText = item.name;
                 btn.onclick = () => toggleEquip(item.type, item.file);
                 catUnlocked.appendChild(btn);
-            } else {
+            }
+        });
+        unlockedContainer.appendChild(catUnlocked);
+    }
+
+    // --- 未解放リスト(ショップ画面)の描画 ---
+    function renderShopItems() {
+        const lockedContainer = document.getElementById('locked-list');
+        lockedContainer.innerHTML = '';
+        const category = currentShopTab;
+        
+        const catLocked = document.createElement('div');
+        catLocked.className = 'shop-category';
+        let hasLocked = false;
+
+        ITEM_DB[category].forEach(item => {
+            if (!state.unlocked[item.id]) {
+                const btn = document.createElement('button');
                 btn.className = 'item-btn';
                 btn.innerText = item.name;
                 btn.onclick = () => showPreview(item);
@@ -602,9 +649,13 @@
                 hasLocked = true;
             }
         });
-
-        unlockedContainer.appendChild(catUnlocked);
         if (hasLocked) lockedContainer.appendChild(catLocked);
+    }
+
+    // --- 全アイテムリストの一括更新 ---
+    function renderItems() {
+        renderRoomItems();
+        renderShopItems();
     }
 
     // --- アバター画像の適用 ---
