@@ -484,11 +484,10 @@
     };
 
     const categoryNames = { clothes: "衣装", acc: "アクセサリー", bg: "背景" };
-    const defaultEquip = { clothes: '', acc: '', bg: '' };
     
-    // --- ゲームステータスと装備状況 ---
-    // ここも初期状態を空っぽに変更しました
-    let currentEquip = { clothes: '', acc: '', bg: '' };
+    // アクセサリーを複数持てるよう、初期値を配列([])に変更
+    const defaultEquip = { clothes: '', acc: [], bg: '' };
+    let currentEquip = { clothes: '', acc: [], bg: '' };
     
     let state = {
         totalScore: 0,
@@ -528,7 +527,12 @@
             }
         }
         if (savedEquip) {
-            currentEquip = { ...currentEquip, ...JSON.parse(savedEquip) };
+            let loadedEquip = JSON.parse(savedEquip);
+            // 過去のセーブデータ（アクセサリが文字列だった場合）を配列に自動変換する処理
+            if (typeof loadedEquip.acc === 'string') {
+                loadedEquip.acc = loadedEquip.acc === '' ? [] : [loadedEquip.acc];
+            }
+            currentEquip = { ...currentEquip, ...loadedEquip };
         }
         
         ['clothes', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
@@ -617,17 +621,39 @@
         
         const catUnlocked = document.createElement('div');
         catUnlocked.className = 'shop-category';
+
+        // アクセサリーの時だけ表示する注意書き
+        if (category === 'acc') {
+            const notice = document.createElement('p');
+            notice.style.fontSize = '12px';
+            notice.style.color = '#e74c3c';
+            notice.style.fontWeight = 'bold';
+            notice.style.margin = '0 0 10px 0';
+            notice.innerText = '※アクセサリーは複数つけることができます。タップでつけ外しが可能です。';
+            catUnlocked.appendChild(notice);
+        }
         
         const defBtn = document.createElement('button');
-        const isDefEquipped = currentEquip[category] === defaultEquip[category];
+        // アクセサリー(配列)かその他(文字列)かで判定を分ける
+        const isDefEquipped = category === 'acc' 
+            ? currentEquip.acc.length === 0 
+            : currentEquip[category] === defaultEquip[category];
+
         defBtn.className = isDefEquipped ? 'equip-btn active-equip' : 'equip-btn';
         defBtn.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
-        defBtn.onclick = () => toggleEquip(category, defaultEquip[category]);
+        defBtn.onclick = () => {
+            if (category === 'acc') toggleEquip('acc', '');
+            else toggleEquip(category, defaultEquip[category]);
+        };
         catUnlocked.appendChild(defBtn);
 
         ITEM_DB[category].forEach(item => {
             if (state.unlocked[item.id]) {
-                const isEquipped = currentEquip[category] === item.file;
+                // 配列にファイル名が含まれているかで判定
+                const isEquipped = category === 'acc' 
+                    ? currentEquip.acc.includes(item.file)
+                    : currentEquip[category] === item.file;
+                
                 const btn = document.createElement('button');
                 btn.className = isEquipped ? 'equip-btn active-equip' : 'equip-btn';
                 btn.innerText = item.name;
@@ -669,21 +695,59 @@
 
     // --- アバター画像の適用 ---
     function applyAvatarImage(type, file) {
-        const layer = document.getElementById(`layer-${type}`);
-        if (file === '') {
-            layer.style.display = 'none';
+        if (type === 'acc') {
+            const avatarArea = document.getElementById('avatar-area');
+            
+            // 動的に追加されたアクセサリレイヤーを一旦すべて削除
+            avatarArea.querySelectorAll('.dynamic-acc').forEach(el => el.remove());
+            
+            // 元々HTMLにあった空の #layer-acc は非表示固定にする
+            const staticAcc = document.getElementById('layer-acc');
+            if(staticAcc) staticAcc.style.display = 'none';
+
+            // 現在選択されているすべてのアクセサリを描画
+            if (Array.isArray(file)) {
+                file.forEach(f => {
+                    const img = document.createElement('img');
+                    img.className = 'avatar-layer dynamic-acc';
+                    img.style.zIndex = 4;
+                    img.src = f;
+                    avatarArea.appendChild(img);
+                });
+            }
         } else {
-            layer.src = file;
-            layer.style.display = 'block';
+            const layer = document.getElementById(`layer-${type}`);
+            if (file === '') {
+                layer.style.display = 'none';
+            } else {
+                layer.src = file;
+                layer.style.display = 'block';
+            }
         }
     }
 
     // --- 装備のトグル（オンオフ）処理 ---
     function toggleEquip(type, file) {
-        if (currentEquip[type] === file && file !== defaultEquip[type]) {
-            currentEquip[type] = defaultEquip[type];
+        if (type === 'acc') {
+            // "何もつけない"が押された場合
+            if (file === '') {
+                currentEquip.acc = [];
+            } else {
+                // 配列の中に該当ファイルがあるかチェック
+                const idx = currentEquip.acc.indexOf(file);
+                if (idx > -1) {
+                    currentEquip.acc.splice(idx, 1); // あれば外す
+                } else {
+                    currentEquip.acc.push(file); // なければつける
+                }
+            }
         } else {
-            currentEquip[type] = file;
+            // 今までの服・背景の処理
+            if (currentEquip[type] === file && file !== defaultEquip[type]) {
+                currentEquip[type] = defaultEquip[type];
+            } else {
+                currentEquip[type] = file;
+            }
         }
         
         applyAvatarImage(type, currentEquip[type]);
