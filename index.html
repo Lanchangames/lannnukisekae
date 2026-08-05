@@ -327,6 +327,13 @@
                 text-align: center;
             }
         }
+
+        /* ----- 追加: 購入エフェクト用アニメーション ----- */
+        @keyframes purchaseEffect {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -706,6 +713,29 @@
         state.unlocked[previewTarget.id] = true;
         setLancelotMessage(`新しいアイテム「${previewTarget.name}」を手に入れたな。クローゼットに入れておいたぞ。`);
         
+        // --- 追加: 購入エフェクトの生成 ---
+        const btn = document.getElementById('btn-buy-preview');
+        const rect = btn.getBoundingClientRect();
+        const effectEl = document.createElement('div');
+        effectEl.innerText = "✨ 解放完了！ ✨";
+        effectEl.style.position = 'fixed';
+        effectEl.style.left = (rect.left + rect.width / 2) + 'px';
+        effectEl.style.top = rect.top + 'px';
+        effectEl.style.transform = 'translate(-50%, -50%)'; // 中央揃え
+        effectEl.style.color = '#f1c40f';
+        effectEl.style.fontWeight = 'bold';
+        effectEl.style.fontSize = '20px';
+        effectEl.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+        effectEl.style.pointerEvents = 'none';
+        effectEl.style.zIndex = '9999';
+        effectEl.style.animation = 'purchaseEffect 1s ease-out forwards';
+        document.body.appendChild(effectEl);
+        
+        setTimeout(() => {
+            if (effectEl.parentNode) effectEl.parentNode.removeChild(effectEl);
+        }, 1000);
+        // ---------------------------------
+
         previewTarget = null;
         document.getElementById('preview-img').style.display = 'none';
         document.getElementById('preview-name').innerText = 'アイテムを選択してください';
