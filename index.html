@@ -347,9 +347,11 @@
 </div>
 
 <div id="game-container">
-    <div id="avatar-area">        <img id="layer-bg" class="avatar-layer" style="z-index: 1;" src="bg.png" alt="背景">
+    <div id="avatar-area">
+        <!-- 初期状態で服と背景のsrcを空にし、display:noneで非表示に設定しました -->
+        <img id="layer-bg" class="avatar-layer" style="z-index: 1; display:none;" src="" alt="背景">
         <img id="layer-base" class="avatar-layer" style="z-index: 2;" src="avator.png" alt="素体">
-        <img id="layer-clothes" class="avatar-layer" style="z-index: 3;" src="clothes_1.png" alt="服">
+        <img id="layer-clothes" class="avatar-layer" style="z-index: 3; display:none;" src="" alt="服">
         <img id="layer-acc" class="avatar-layer" style="z-index: 4; display:none;" src="" alt="アクセ">
     </div>
 
@@ -478,7 +480,9 @@
     const defaultEquip = { clothes: '', acc: '', bg: '' };
     
     // --- ゲームステータスと装備状況 ---
-    let currentEquip = { clothes: 'clothes_1.png', acc: '', bg: 'bg.png' };
+    // ここも初期状態を空っぽに変更しました
+    let currentEquip = { clothes: '', acc: '', bg: '' };
+    
     let state = {
         totalScore: 0,
         reportCount: 0,
