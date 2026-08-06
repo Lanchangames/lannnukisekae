@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランぬのわくわく古戦場！</title>
     
-    <!-- iPhone-->
-    < <link rel="apple-touch-icon" href="avator.png"> 
+    <!-- iPhoneホーム画面用アイコンの設定（画像を用意したら以下の <!-- と --> を消して有効化してください） -->
+    <!-- <link rel="apple-touch-icon" href="icon.png"> -->
 
     <style>
         :root {
@@ -775,7 +775,11 @@
         if (item.type === 'acc') price = 300;
         
         document.getElementById('preview-name').innerText = item.name;
-        document.getElementById('preview-desc').innerText = `絵柄を確認中。${price}コインでクローゼットに追加できます。`;
+        if (state.coins < price) {
+            document.getElementById('preview-desc').innerHTML = `絵柄を確認中。${price}コインでクローゼットに追加できます。<br><span style="color: #e74c3c; font-weight: bold;">コインが足りません！</span>`;
+        } else {
+            document.getElementById('preview-desc').innerText = `絵柄を確認中。${price}コインでクローゼットに追加できます。`;
+        }
         
         const buyBtn = document.getElementById('btn-buy-preview');
         buyBtn.innerText = `${price}コインで解放`;
