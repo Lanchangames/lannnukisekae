@@ -56,6 +56,38 @@
             object-fit: contain;
         }
 
+        /* はじめに読んでね モーダルのスタイル追加 */
+        #info-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        #info-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 85%;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #info-content h2 {
+            color: var(--primary);
+            font-size: 18px;
+            margin-top: 25px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+        }
+        #info-content h2:first-child { margin-top: 0; }
+        #info-content p { font-size: 14px; line-height: 1.6; margin-top: 10px; color: #555; }
+        .close-btn { display: block; margin: 30px auto 0; }
+
         #game-container {
             display: flex;
             gap: 20px;
@@ -348,17 +380,50 @@
     <div id="start-box">
         <!-- logo.png がない場合のプレビュー用onerrorを仕込んでいます -->
         <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
-        <p style="line-height: 1.6; margin-bottom: 30px; font-size: 15px; color: #555;">
+        <p style="line-height: 1.6; margin-bottom: 25px; font-size: 15px; color: #555;">
             古戦場の累計貢献度を報告してコインを獲得し、<br>
             アイテムを解放して自由に着せ替えを楽しもう！<br>
             
-            <img src="avator.png" alt="アバター" style="max-width: 120px; height: auto; display: block; margin: 15px auto;">
-            
-            <span style="font-size: 12px;">ブラウザの履歴削除を行うとセーブデータが消えます。</span><br>
-            <span style="font-size: 12px;">シークレットブラウザモードではセーブできません。</span><br>
-            <span style="font-size: 12px;">iosの場合は「ホーム画面に追加」を推奨します。</span><br>
+            <img src="avator.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
+        
+        <button onclick="showInfo()" style="font-size: 16px; padding: 10px 30px; border-radius: 30px; margin-bottom: 15px; background-color: var(--secondary);">はじめに読んでね</button><br>
         <button onclick="startGame()" style="font-size: 18px; padding: 12px 40px; border-radius: 30px;">ゲームスタート</button>
+    </div>
+
+    <!-- はじめに読んでね モーダル -->
+    <div id="info-modal">
+        <div id="info-content">
+            <h2>遊びかた</h2>
+            <p>
+                1. 現在の古戦場の累計貢献度を入力して「報告する」ボタンを押します。<br>
+                2. 報告を行うと、コインと親愛度が貯まります。<br>
+                3. 貯まったコインを使い、ショップ画面からアイテムを解放しましょう。<br>
+                4. 解放したアイテムは、ルーム画面のクローゼットから自由に着せ替え可能です。
+            </p>
+
+            <h2>注意事項</h2>
+            <p>
+                ・ブラウザの履歴削除を行うとセーブデータが消えます。<br>
+                ・シークレットブラウザモードではセーブできません。<br>
+                ・iosの場合は「ホーム画面に追加」を推奨します。
+            </p>
+
+            <h2>感想フォーム</h2>
+            <p style="text-align: center; margin-top: 20px;">
+                <!-- ↓ URLをここに入力してください の部分にフォームのリンクを貼り付けてください ↓ -->
+                <a href="URLをここに入力してください" target="_blank" style="text-decoration: none;">
+                    <button style="font-size: 18px; padding: 12px 40px; border-radius: 30px; background-color: var(--accent);">ご感想はこちらから</button>
+                </a>
+            </p>
+
+            <h2>クレジット</h2>
+            <p>
+                イラスト：ああああ 様
+            </p>
+
+            <button onclick="hideInfo()" class="close-btn" style="font-size: 16px; padding: 8px 30px; border-radius: 20px; background-color: var(--secondary);">閉じる</button>
+        </div>
     </div>
 </div>
 
@@ -452,6 +517,14 @@
 </div>
 
 <script>
+    // --- モーダル制御 ---
+    function showInfo() {
+        document.getElementById('info-modal').style.display = 'flex';
+    }
+    function hideInfo() {
+        document.getElementById('info-modal').style.display = 'none';
+    }
+
     // --- データベース管理 ---
     const ITEM_DB = {
         clothes: [
