@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランぬのわくわく古戦場！</title>
+    
+    <!-- iPhone-->
+    < <link rel="apple-touch-icon" href="avator.png"> 
+
     <style>
         :root {
             --primary: #2c3e50;
@@ -90,6 +94,7 @@
             gap: 15px;
             overflow-y: auto;
             padding-right: 10px;
+            padding-bottom: 50px; /* スクロール下部に余裕を持たせる余白を追加 */
         }
         #lancelot-area {
             display: flex;
@@ -264,7 +269,7 @@
                 padding: 10px;
                 gap: 10px;
             }
-            body { padding: 0; }
+            body { padding: 0 0 50px 0; } /* スマホ版の下部にも余白を追加 */
             
             #avatar-area {
                 width: 100%;
@@ -849,7 +854,7 @@
             const hours = timeDiffMs / (1000 * 60 * 60);
             if (hours > 0) {
                 const pace = diff / hours;
-                if (pace <= 10000) {
+                if (diff <= 10000) {
                     setLancelotMessage("うーん、もう少し頑張らないか？");
                     return;
                 }
