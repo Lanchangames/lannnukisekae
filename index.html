@@ -438,14 +438,22 @@
                 position: relative;
             }
 
-            /* 【着せ替えモード時】アバターを小型化＆上部固定 */
+            /* 【着せ替えモード時】アバターを小型化 (上部固定は解除) */
             #game-container.mode-dressup #avatar-area {
-                position: sticky;
-                top: 10px;
-                z-index: 50;
                 max-width: 150px; /* 小さく */
                 height: 200px;    /* 小さく */
+                margin: 0 auto;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+
+            /* アイテム欄のみスクロール可能にする */
+            #game-container.mode-dressup #unlocked-list,
+            #game-container.mode-dressup #locked-list {
+                max-height: 35vh; /* 画面サイズに合わせてスクロール領域を確保 */
+                overflow-y: auto;
+                border-top: 1px dashed #bdc3c7;
+                padding-top: 10px;
+                margin-top: 5px;
             }
 
             #ui-area {
