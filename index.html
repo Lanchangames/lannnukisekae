@@ -254,6 +254,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
         }
         #preview-img {
             max-width: 90%;
@@ -399,7 +400,8 @@
                 1. 現在の古戦場の累計貢献度を入力して「報告する」ボタンを押します。<br>
                 2. 報告を行うと、コインと親愛度が貯まります。<br>
                 3. 貯まったコインを使い、ショップ画面からアイテムを解放しましょう。<br>
-                4. 解放したアイテムは、ルーム画面のクローゼットから自由に着せ替え可能です。
+                4. 解放したアイテムは、ルーム画面のクローゼットから自由に着せ替え可能です。<br>
+                5. 貢献度を間違えてしまった場合は、「貢献度修正」ボタンで正しい数値に修正できます（コイン等は貯まりません）。
             </p>
 
             <h2>注意事項</h2>
@@ -422,7 +424,7 @@
                 イラスト：ああああ 様
             </p>
 
-            <button onclick="hideInfo()" class="close-btn" style="font-size: 16px; padding: 8px 30px; border-radius: 20px; background-color: var(--secondary);">閉じる</button>
+            <button onclick="hideInfo()" class="close-btn" style="font-size: 18px; padding: 12px 40px; border-radius: 30px; background-color: var(--secondary);">閉じる</button>
         </div>
     </div>
 </div>
@@ -459,9 +461,12 @@
                 <span>親愛度: <span id="val-affection">0</span></span>
             </div>
 
-            <div class="input-group">
+            <div class="input-group" style="align-items: stretch;">
                 <input type="number" id="input-score" placeholder="現在の累計貢献度を入力">
-                <button id="btn-report" onclick="reportScore()">報告する</button>
+                <div style="display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; width: 180px;">
+                    <button id="btn-report" onclick="reportScore()" style="width: 100%; padding: 10px 0;">報告する</button>
+                    <button id="btn-fix" onclick="fixScore()" style="width: 100%; padding: 10px 0; background-color: #e67e22; font-size: 10px; line-height: 1.2;">貢献度修正<br>（コインは貯まりません）</button>
+                </div>
             </div>
             <div id="cooldown-text"></div>
 
@@ -496,8 +501,10 @@
             <div class="shop-area" id="preview-section" style="padding-top: 5px; border-top: none;">
                 <h3>アイテムプレビュー</h3>
                 <div id="preview-panel">
-                    <div id="preview-img-container">
-                        <img id="preview-img" src="">
+                    <div id="preview-img-container" style="position: relative;">
+                        <img id="preview-layer-bg" src="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; display: none; z-index: 1;">
+                        <img id="preview-layer-base" src="avator.png" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; opacity: 0.5; display: block; z-index: 2;">
+                        <img id="preview-img" src="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; display: none; z-index: 3;">
                     </div>
                     <div class="preview-info">
                         <h4 id="preview-name" style="font-size: 16px; margin:0;">アイテムを選択してください</h4>
@@ -844,8 +851,18 @@
     function showPreview(item) {
         previewTarget = item;
         const img = document.getElementById('preview-img');
-        img.src = item.file;
-        img.style.display = 'block';
+        const layerBg = document.getElementById('preview-layer-bg');
+        
+        img.style.display = 'none';
+        layerBg.style.display = 'none';
+        
+        if (item.type === 'bg') {
+            layerBg.src = item.file;
+            layerBg.style.display = 'block';
+        } else {
+            img.src = item.file;
+            img.style.display = 'block';
+        }
         
         let price = 500;
         if (item.type === 'bg') price = 200;
@@ -902,6 +919,7 @@
 
         previewTarget = null;
         document.getElementById('preview-img').style.display = 'none';
+        document.getElementById('preview-layer-bg').style.display = 'none';
         document.getElementById('preview-name').innerText = 'アイテムを選択してください';
         document.getElementById('preview-desc').innerText = '未解放リストからアイテムを選ぶと、絵柄を確認できます。';
         document.getElementById('btn-buy-preview').style.display = 'none';
@@ -966,6 +984,23 @@
         document.getElementById('input-score').value = '';
         updateUI();
         startCooldownTimer();
+        saveGame();
+    }
+
+    // --- 貢献度修正 ---
+    function fixScore() {
+        const inputVal = parseInt(document.getElementById('input-score').value, 10);
+        
+        if (isNaN(inputVal) || inputVal < 0) {
+            setLancelotMessage("正しい貢献度を入力してくれ。");
+            return;
+        }
+
+        state.totalScore = inputVal;
+        setLancelotMessage("貢献度を修正したぞ。次は間違えないようにな。");
+
+        document.getElementById('input-score').value = '';
+        updateUI();
         saveGame();
     }
 
