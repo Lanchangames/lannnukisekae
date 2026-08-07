@@ -10,10 +10,12 @@
 
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --bg: #ecf0f1;
+            /* 全体カラーの刷新 */
+            --primary: #5fa8d3;    /* 青（情報・メイン） */
+            --secondary: #8da3b5;  /* サブカラー（グレー系から少し柔らかく） */
+            --accent: #f4a6b9;     /* ピンク（着せ替え） */
+            --reward: #f7c552;     /* 黄・オレンジ（報酬・強調） */
+            --bg: #fdf6f7;         /* 薄ピンクがかった白（温かみ） */
             --text: #333;
         }
         body {
@@ -43,9 +45,9 @@
         #start-box {
             background: white;
             padding: 40px;
-            border-radius: 12px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             width: 90%;
             max-width: 500px;
         }
@@ -69,7 +71,7 @@
         #info-content {
             background: white;
             padding: 30px;
-            border-radius: 12px;
+            border-radius: 16px;
             max-width: 500px;
             width: 85%;
             max-height: 80vh;
@@ -81,7 +83,7 @@
             color: var(--primary);
             font-size: 18px;
             margin-top: 25px;
-            border-bottom: 2px solid var(--accent);
+            border-bottom: 2px solid var(--primary);
             padding-bottom: 5px;
         }
         #info-content h2:first-child { margin-top: 0; }
@@ -91,13 +93,13 @@
         /* ----- 画面の基本骨格 ----- */
         #game-container {
             display: flex;
-            flex-direction: column; /* 縦並びに変更 (大タブを上に置くため) */
+            flex-direction: column; 
             gap: 20px;
             width: 950px;
             background: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             max-height: 90vh;
         }
         
@@ -106,20 +108,20 @@
             display: flex;
             gap: 20px;
             flex: 1;
-            overflow: hidden;
+            overflow: hidden; /* PCではこれで右側がスクロール */
         }
 
-        /* アバターエリア (左側) */
+        /* アバターエリア (左側) - クリーン化 */
         #avatar-area {
             position: relative;
             width: 360px;
             height: 480px;
-            border: 2px solid #bdc3c7;
-            border-radius: 8px;
+            border: 3px solid #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* 柔らかい影で引き立てる */
             overflow: hidden;
             background-color: #fff;
             flex-shrink: 0;
-            transition: max-width 0.3s, height 0.3s; /* リサイズ時のアニメーション */
         }
         .avatar-layer {
             position: absolute;
@@ -142,6 +144,33 @@
             padding-bottom: 50px;
         }
 
+        /* ----- 共通ボタンデザイン (ソシャゲ風) ----- */
+        button {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px; /* 角丸大きく */
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1); /* 軽い影 */
+            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+        }
+        button:hover:not(:disabled) {
+            filter: brightness(1.05);
+        }
+        /* 押した時に沈むアニメーション */
+        button:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.1);
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
         /* ----- 大タブナビゲーション ----- */
         #main-nav {
             display: flex;
@@ -151,19 +180,15 @@
         .m-tab-btn {
             flex: 1;
             padding: 12px;
-            background: #ecf0f1;
+            background: #ffffff;
             border: 1px solid #bdc3c7;
-            border-radius: 8px;
-            font-weight: bold;
             color: var(--secondary);
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 16px;
         }
         .m-tab-btn.active {
-            background: var(--accent);
+            background: var(--primary);
             color: white;
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
 
         /* ----- 小タブナビゲーション (着せ替え内) ----- */
@@ -176,23 +201,19 @@
         .sub-tab-btn {
             flex: 1;
             padding: 10px;
-            background: #ecf0f1;
+            background: #ffffff;
             border: 1px solid #bdc3c7;
-            border-radius: 6px;
-            font-weight: bold;
             color: var(--secondary);
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 14px;
         }
         .sub-tab-btn.active {
-            background: #8e44ad;
+            background: var(--accent); /* ピンク */
             color: white;
-            border-color: #8e44ad;
+            border-color: var(--accent);
         }
 
         /* ----- 各セクションの表示制御 ----- */
-        #section-top, #section-room, #section-shop {
+        #section-top, #section-room, #section-shop, #section-data {
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -200,23 +221,32 @@
 
         #ui-area.show-top #section-room, 
         #ui-area.show-top #section-shop, 
-        #ui-area.show-top #sub-nav { display: none !important; }
+        #ui-area.show-top #sub-nav,
+        #ui-area.show-top #section-data { display: none !important; }
         
         #ui-area.show-room #section-top, 
-        #ui-area.show-room #section-shop { display: none !important; }
+        #ui-area.show-room #section-shop,
+        #ui-area.show-room #section-data { display: none !important; }
         #ui-area.show-room #sub-nav { display: flex !important; }
 
         #ui-area.show-shop #section-top, 
-        #ui-area.show-shop #section-room { display: none !important; }
+        #ui-area.show-shop #section-room,
+        #ui-area.show-shop #section-data { display: none !important; }
         #ui-area.show-shop #sub-nav { display: flex !important; }
+
+        #ui-area.show-data #section-top,
+        #ui-area.show-data #section-room,
+        #ui-area.show-data #section-shop,
+        #ui-area.show-data #sub-nav { display: none !important; }
 
         #lancelot-area {
             display: flex;
             gap: 10px;
-            background: #e8f4f8;
+            background: #ffffff;
             padding: 15px;
-            border-radius: 8px;
-            border-left: 5px solid var(--accent);
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             flex-shrink: 0;
         }
         #lancelot-img {
@@ -236,17 +266,38 @@
             align-items: center;
             white-space: pre-wrap;
         }
-        /* ステータス・入力系 */
-        .status-box {
+        
+        /* ステータスカード風デザイン */
+        .status-container {
             display: flex;
+            gap: 10px;
             justify-content: space-between;
-            background: var(--primary);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-weight: bold;
             flex-shrink: 0;
         }
+        .status-card {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            font-weight: bold;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .status-card .label {
+            font-size: 12px;
+            color: #666;
+        }
+        .status-card .val {
+            font-size: 16px;
+            color: var(--primary);
+        }
+
         .input-group {
             display: flex;
             gap: 10px;
@@ -254,29 +305,13 @@
             flex-shrink: 0;
         }
         input[type="number"] {
-            padding: 8px;
+            padding: 12px;
             font-size: 16px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 8px;
             flex: 1;
         }
-        button {
-            padding: 10px 20px;
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
+        
         #cooldown-text {
             color: #e74c3c;
             font-size: 14px;
@@ -285,41 +320,43 @@
         
         /* ショップ・クローゼットUI */
         .shop-area {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
+            border-top: none; /* 枠線廃止 */
         }
         .shop-category {
             margin-bottom: 15px;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 8px;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-        h3 { margin: 0 0 10px 0; color: var(--primary); }
+        h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
         h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
         
         .item-btn, .equip-btn {
             margin: 4px;
             font-size: 13px;
             padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+        }
+        .item-btn:active:not(:disabled), .equip-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.1);
         }
         /* 未開放用ボタン */
-        .item-btn { background-color: #7f8c8d; }
-        .item-btn:hover { background-color: #95a5a6; }
+        .item-btn { background-color: #ecf0f1; color: #555; }
         /* クローゼット用ボタン */
-        .equip-btn { background-color: #8e44ad; }
-        .equip-btn:hover { background-color: #9b59b6; }
+        .equip-btn { background-color: var(--accent); color: white; }
         /* 装備中アピール */
-        .equip-btn.active-equip { background-color: #e67e22; border: 2px solid #d35400; padding: 6px 10px; }
+        .equip-btn.active-equip { background-color: var(--reward); color: #333; }
         
         /* プレビュー枠 */
         #preview-panel {
             display: flex;
             gap: 15px;
-            background: #e8f4f8;
+            background: #ffffff;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 15px;
             align-items: center;
         }
@@ -327,11 +364,11 @@
             width: 100px;
             height: 120px;
             background: rgba(255, 255, 255, 0.7);
-            background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
+            border-radius: 8px;
+            border: 1px solid #eee;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -351,18 +388,20 @@
         .tab-container {
             display: flex;
             gap: 5px;
-            border-bottom: 2px solid var(--primary);
             padding-bottom: 5px;
         }
         .tab-btn {
-            background-color: #ecf0f1;
+            background-color: #ffffff;
             color: var(--secondary);
             border: 1px solid #bdc3c7;
             padding: 8px 15px;
             font-size: 14px;
-            border-radius: 4px 4px 0 0;
-            cursor: pointer;
-            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.05);
+        }
+        .tab-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.05);
         }
         .tab-btn.active {
             background-color: var(--primary);
@@ -370,7 +409,7 @@
             border-color: var(--primary);
         }
 
-        /* ----- スマホ専用レイアウト設定 ----- */
+        /* ----- スマホ専用レイアウト (Split View) ----- */
         @media (max-width: 768px) {
             #game-container {
                 max-height: none;
@@ -386,31 +425,32 @@
             }
             body { padding: 0 0 50px 0; }
             
+            /* 【Split View】アバターを常に上部に固定 */
             #avatar-area {
+                position: sticky;
+                top: 10px;
+                z-index: 50;
                 width: 100%;
                 max-width: 252px;
                 height: 336px; 
                 margin: 0 auto;
-                position: relative;
-            }
-
-            /* 【着せ替えモード時】アバターを小型化＆上部固定 */
-            #game-container.mode-dressup #avatar-area {
-                position: sticky;
-                top: 10px;
-                z-index: 50;
-                max-width: 150px; /* 小さく */
-                height: 200px;    /* 小さく */
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             }
 
             #ui-area {
                 overflow-y: visible;
                 padding-right: 0;
             }
-            .status-box {
+            .status-container {
+                gap: 5px;
+            }
+            .status-card {
+                padding: 8px 5px;
+            }
+            .status-card .label {
+                font-size: 10px;
+            }
+            .status-card .val {
                 font-size: 14px;
-                flex-wrap: wrap;
             }
             .input-group {
                 flex-direction: column;
@@ -422,7 +462,7 @@
             }
         }
 
-        /* ----- 追加: 購入エフェクト用アニメーション ----- */
+        /* 購入エフェクト用アニメーション */
         @keyframes purchaseEffect {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
@@ -443,8 +483,8 @@
             <img src="avatar.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
         
-        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; border-radius: 30px; margin-bottom: 15px; background-color: var(--secondary);">はじめに読んでね</button><br>
-        <button onclick="startGame()" style="width: 260px; font-size: 18px; padding: 12px 0; border-radius: 30px;">ゲームスタート</button>
+        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: var(--secondary);">はじめに読んでね</button><br>
+        <button onclick="startGame()" style="width: 260px; font-size: 18px; padding: 12px 0;">ゲームスタート</button>
     </div>
 
     <!-- はじめに読んでね モーダル -->
@@ -469,7 +509,7 @@
             <h2>ご感想はこちらから</h2>
             <p style="text-align: center; margin-top: 20px;">
                 <a href="https://x.com/mhks_dora/status/2082801864761016513" target="_blank" style="text-decoration: none;">
-                    <button style="font-size: 18px; padding: 12px 40px; border-radius: 30px; background-color: var(--accent);">気軽に送ってね</button>
+                    <button style="font-size: 18px; padding: 12px 40px; background-color: var(--primary);">気軽に送ってね</button>
                 </a>
             </p>
 
@@ -478,18 +518,18 @@
                 イラスト：ああああ 様
             </p>
 
-            <button onclick="hideInfo()" class="close-btn" style="font-size: 18px; padding: 12px 40px; border-radius: 30px; background-color: var(--secondary);">閉じる</button>
+            <button onclick="hideInfo()" class="close-btn" style="font-size: 18px; padding: 12px 40px; background-color: var(--secondary);">閉じる</button>
         </div>
     </div>
 </div>
 
-<!-- モード管理用のクラス "mode-top" を付与 -->
-<div id="game-container" class="mode-top">
+<div id="game-container">
     
     <!-- 大タブ（常に一番上に表示） -->
     <div id="main-nav">
         <button class="m-tab-btn active" onclick="switchMainTab('top')">トップ</button>
         <button class="m-tab-btn" onclick="switchMainTab('dressup')">着せ替え</button>
+        <button class="m-tab-btn" onclick="switchMainTab('data')">データ</button>
     </div>
 
     <div id="content-wrapper">
@@ -501,7 +541,7 @@
             <img id="layer-acc" class="avatar-layer" style="z-index: 4; display:none;" src="" alt="アクセ">
         </div>
 
-        <!-- メインUIエリア (デフォルトではトップ画面を表示) -->
+        <!-- メインUIエリア -->
         <div id="ui-area" class="show-top">
             
             <!-- 小タブ (着せ替えモードの時に表示されます) -->
@@ -517,35 +557,34 @@
                     <div id="message-box"></div>
                 </div>
 
-                <div class="status-box">
-                    <span>累計貢献度: <span id="val-total">0</span></span>
-                    <span>報告回数: <span id="val-reports">0</span>回</span>
-                    <span>コイン: <span id="val-coins">0</span></span>
+                <div class="status-container">
+                    <div class="status-card">
+                        <span class="label">🌟 貢献度</span>
+                        <span class="val" id="val-total">0</span>
+                    </div>
+                    <div class="status-card">
+                        <span class="label">📣 報告回数</span>
+                        <span class="val"><span id="val-reports">0</span>回</span>
+                    </div>
+                    <div class="status-card">
+                        <span class="label">🪙 コイン</span>
+                        <span class="val" id="val-coins">0</span>
+                    </div>
                 </div>
 
                 <div class="input-group" style="align-items: stretch;">
                     <input type="number" id="input-score" placeholder="現在の累計貢献度を入力">
                     <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
                         <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;">報告する</button>
-                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br>（コインは貯まりません）</button>
+                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #e74c3c;">貢献度修正<br><span style="font-size:10px;">（コイン無）</span></button>
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
-
-                <!-- データ引継ぎ / バックアップ UI -->
-                <div style="margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
-                    <h4 style="margin: 0 0 10px 0; color: var(--secondary);">データ引継ぎ / バックアップ</h4>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="exportData()" style="padding: 8px 12px; font-size: 13px; flex: 1; background-color: #7f8c8d;">データ出力(コピー)</button>
-                        <button onclick="importData()" style="padding: 8px 12px; font-size: 13px; flex: 1; background-color: #27ae60;">データ読込</button>
-                    </div>
-                    <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 60px; margin-top: 10px; padding: 8px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; resize: none;"></textarea>
-                </div>
             </div>
 
             <!-- ルーム画面の要素 (着せ替え > ルーム) -->
             <div id="section-room">
-                <div class="shop-area" style="border-top: none; padding-top: 5px; margin-top: 0;">
+                <div class="shop-area" style="padding-top: 5px; margin-top: 0;">
                     <h3>クローゼット</h3>
                     <div class="tab-container" style="margin-bottom: 10px;">
                         <button class="tab-btn active" id="tab-clothes-room" onclick="changeRoomTab('clothes')">衣装</button>
@@ -560,8 +599,11 @@
             <!-- ショップ画面の要素 (着せ替え > ショップ) -->
             <div id="section-shop">
                 
-                <div class="status-box" style="margin-bottom: 15px;">
-                    <span>所持コイン: <span id="val-coins-shop">0</span></span>
+                <div class="status-container" style="margin-bottom: 15px;">
+                    <div class="status-card">
+                        <span class="label">🪙 所持コイン</span>
+                        <span class="val" id="val-coins-shop">0</span>
+                    </div>
                 </div>
 
                 <!-- ショップ内カテゴリタブ -->
@@ -571,10 +613,10 @@
                     <button class="tab-btn" id="tab-bg-shop" onclick="changeShopTab('bg')">背景</button>
                 </div>
 
-                <div class="shop-area" id="preview-section" style="padding-top: 5px; border-top: none;">
+                <div class="shop-area" id="preview-section" style="padding-top: 5px;">
                     <h3>アイテムプレビュー</h3>
                     <div id="preview-panel">
-                        <div id="preview-img-container" style="position: relative;">
+                        <div id="preview-img-container">
                             <img id="preview-layer-bg" src="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; display: none; z-index: 1;">
                             <img id="preview-layer-base" src="avatar.png" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; opacity: 0.5; display: block; z-index: 2;">
                             <img id="preview-img" src="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; display: none; z-index: 3;">
@@ -582,7 +624,7 @@
                         <div class="preview-info">
                             <h4 id="preview-name" style="font-size: 16px; margin:0;">アイテムを選択してください</h4>
                             <p id="preview-desc">未解放リストからアイテムを選ぶと、絵柄を確認できます。</p>
-                            <button id="btn-buy-preview" style="display:none; background-color: #27ae60;" onclick="buyPreviewItem()">500コインで解放</button>
+                            <button id="btn-buy-preview" style="display:none; background-color: var(--reward); color: #333;" onclick="buyPreviewItem()">500コインで解放</button>
                         </div>
                     </div>
                 </div>
@@ -593,6 +635,19 @@
                 </div>
 
             </div>
+
+            <!-- データ画面の要素 (設定・バックアップ) -->
+            <div id="section-data">
+                <div style="padding: 20px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ / バックアップ</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--secondary);">データ出力(コピー)</button>
+                        <button onclick="importData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--primary);">データ読込</button>
+                    </div>
+                    <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 80px; margin-top: 15px; padding: 10px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 8px; resize: none;"></textarea>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -792,10 +847,9 @@
         }
     }
 
-    // --- 大タブ切り替え (トップ / 着せ替え) ---
+    // --- 大タブ切り替え (トップ / 着せ替え / データ) ---
     function switchMainTab(mode) {
         currentMode = mode;
-        const gc = document.getElementById('game-container');
         const uiArea = document.getElementById('ui-area');
         const btns = document.querySelectorAll('#main-nav .m-tab-btn');
         
@@ -803,15 +857,14 @@
         
         if (mode === 'top') {
             btns[0].classList.add('active');
-            gc.classList.remove('mode-dressup');
-            gc.classList.add('mode-top');
             uiArea.className = 'show-top';
-        } else {
+        } else if (mode === 'dressup') {
             btns[1].classList.add('active');
-            gc.classList.remove('mode-top');
-            gc.classList.add('mode-dressup');
             // 着せ替えモード時は、前回開いていた小タブ（ルームかショップ）を復元
             uiArea.className = `show-${currentSubTab}`;
+        } else if (mode === 'data') {
+            btns[2].classList.add('active');
+            uiArea.className = 'show-data';
         }
         
         // スマホでタブを切り替えたら一番上にスクロール
