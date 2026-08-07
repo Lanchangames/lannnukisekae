@@ -100,7 +100,7 @@
         }
         /* アバターエリア (左側) */
         #avatar-area {
-            position: relative; /* 追従(sticky)を解除し、通常の配置に戻しました */
+            position: relative;
             width: 360px;
             height: 480px;
             border: 2px solid #bdc3c7;
@@ -126,8 +126,45 @@
             gap: 15px;
             overflow-y: auto;
             padding-right: 10px;
-            padding-bottom: 50px; /* スクロール下部に余裕を持たせる余白を追加 */
+            padding-bottom: 50px;
         }
+
+        /* ----- メインナビゲーション (PC・スマホ共通) ----- */
+        #main-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+            flex-shrink: 0;
+        }
+        .m-tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .m-tab-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* 各セクションの表示制御 */
+        #section-top, #section-room, #section-shop {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #ui-area.show-top #section-room, #ui-area.show-top #section-shop { display: none !important; }
+        #ui-area.show-room #section-top, #ui-area.show-room #section-shop { display: none !important; }
+        #ui-area.show-shop #section-top, #ui-area.show-shop #section-room { display: none !important; }
+
         #lancelot-area {
             display: flex;
             gap: 10px;
@@ -288,11 +325,7 @@
             border-color: var(--primary);
         }
 
-        /* ----- スマホ専用ナビゲーション・レイアウト設定 ----- */
-        #mobile-nav { display: none; }
-        /* PC環境ではラッパーの存在を無視し、元のFlexbox列挙を維持 */
-        #section-main, #section-shop { display: contents; }
-
+        /* ----- スマホ専用レイアウト設定 ----- */
         @media (max-width: 768px) {
             #game-container {
                 flex-direction: column;
@@ -302,56 +335,19 @@
                 padding: 10px;
                 gap: 10px;
             }
-            body { padding: 0 0 50px 0; } /* スマホ版の下部にも余白を追加 */
+            body { padding: 0 0 50px 0; }
             
             #avatar-area {
                 width: 100%;
-                /* 圧迫感を無くすため縮小 */
                 max-width: 252px;
                 height: 336px; 
                 margin: 0 auto;
-                /* sticky と 影を削除し、文書内に素直に配置（固定）されるように変更 */
                 position: relative;
             }
             #ui-area {
                 overflow-y: visible;
                 padding-right: 0;
             }
-            
-            /* スマホ専用切り替えタブ */
-            #mobile-nav {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 5px;
-            }
-            .m-tab-btn {
-                flex: 1;
-                padding: 12px;
-                background: #ecf0f1;
-                border: 1px solid #bdc3c7;
-                border-radius: 8px;
-                font-weight: bold;
-                color: var(--secondary);
-                text-align: center;
-                cursor: pointer;
-            }
-            .m-tab-btn.active {
-                background: var(--accent);
-                color: white;
-                border-color: var(--accent);
-            }
-
-            /* スマホ環境ではコンテンツを独立したブロックとして扱う */
-            #section-main, #section-shop {
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            /* タブの表示・非表示ロジック */
-            #ui-area.show-main #section-shop { display: none !important; }
-            #ui-area.show-shop #section-main { display: none !important; }
-
             .status-box {
                 font-size: 14px;
                 flex-wrap: wrap;
@@ -379,7 +375,6 @@
 <!-- スタート画面 (ゲーム開始前に表示されます) -->
 <div id="start-screen">
     <div id="start-box">
-        <!-- logo.png がない場合のプレビュー用onerrorを仕込んでいます -->
         <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
         <p style="line-height: 1.6; margin-bottom: 25px; font-size: 15px; color: #555;">
             古戦場の累計貢献度を報告してコインを獲得し、<br>
@@ -413,7 +408,6 @@
 
             <h2>ご感想はこちらから</h2>
             <p style="text-align: center; margin-top: 20px;">
-                <!-- ↓ URLをここに入力してください の部分にフォームのリンクを貼り付けてください ↓ -->
                 <a href="https://x.com/mhks_dora/status/2082801864761016513" target="_blank" style="text-decoration: none;">
                     <button style="font-size: 18px; padding: 12px 40px; border-radius: 30px; background-color: var(--accent);">気軽に送ってね</button>
                 </a>
@@ -431,24 +425,24 @@
 
 <div id="game-container">
     <div id="avatar-area">
-        <!-- 初期状態で服と背景のsrcを空にし、display:noneで非表示に設定しました -->
         <img id="layer-bg" class="avatar-layer" style="z-index: 1; display:none;" src="" alt="背景">
         <img id="layer-base" class="avatar-layer" style="z-index: 2;" src="avatar.png" alt="素体">
         <img id="layer-clothes" class="avatar-layer" style="z-index: 3; display:none;" src="" alt="服">
         <img id="layer-acc" class="avatar-layer" style="z-index: 4; display:none;" src="" alt="アクセ">
     </div>
 
-    <!-- UIエリア (デフォルトではメイン画面を表示) -->
-    <div id="ui-area" class="show-main">
+    <!-- UIエリア (デフォルトではトップ画面を表示) -->
+    <div id="ui-area" class="show-top">
         
-        <!-- スマホ専用タブ (PC画面ではCSSで非表示になります) -->
-        <div id="mobile-nav">
-            <button class="m-tab-btn active" onclick="switchMobileTab('main')">ルーム</button>
-            <button class="m-tab-btn" onclick="switchMobileTab('shop')">ショップ</button>
+        <!-- PC・スマホ共通タブ -->
+        <div id="main-nav">
+            <button class="m-tab-btn active" onclick="switchMainTab('top')">トップ</button>
+            <button class="m-tab-btn" onclick="switchMainTab('room')">ルーム</button>
+            <button class="m-tab-btn" onclick="switchMainTab('shop')">ショップ</button>
         </div>
 
-        <!-- ルーム(メイン)画面の要素 -->
-        <div id="section-main">
+        <!-- トップ画面の要素 -->
+        <div id="section-top">
             <div id="lancelot-area">
                 <img id="lancelot-img" src="lancelot.png" alt="ランスロット" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNDAiIHk9IjQ1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+Tk8gSU1BR0U8L3RleHQ+PC9zdmc+'">
                 <div id="message-box"></div>
@@ -458,7 +452,6 @@
                 <span>累計貢献度: <span id="val-total">0</span></span>
                 <span>報告回数: <span id="val-reports">0</span>回</span>
                 <span>コイン: <span id="val-coins">0</span></span>
-                <span>親愛度: <span id="val-affection">0</span></span>
             </div>
 
             <div class="input-group" style="align-items: stretch;">
@@ -469,9 +462,11 @@
                 </div>
             </div>
             <div id="cooldown-text"></div>
+        </div>
 
-            <!-- クローゼットをルーム画面に移動 -->
-            <div class="shop-area" style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+        <!-- ルーム画面の要素 -->
+        <div id="section-room">
+            <div class="shop-area" style="border-top: none; padding-top: 5px; margin-top: 0;">
                 <h3>クローゼット</h3>
                 <div class="tab-container" style="margin-bottom: 10px;">
                     <button class="tab-btn active" id="tab-clothes-room" onclick="changeRoomTab('clothes')">衣装</button>
@@ -486,7 +481,6 @@
         <!-- ショップ・クローゼット画面の要素 -->
         <div id="section-shop">
             
-            <!-- ショップ画面用のコイン表示を追加 -->
             <div class="status-box" style="margin-bottom: 15px;">
                 <span>所持コイン: <span id="val-coins-shop">0</span></span>
             </div>
@@ -617,7 +611,6 @@
         }
         if (savedEquip) {
             let loadedEquip = JSON.parse(savedEquip);
-            // 過去のセーブデータ（アクセサリが文字列だった場合）を配列に自動変換する処理
             if (typeof loadedEquip.acc === 'string') {
                 loadedEquip.acc = loadedEquip.acc === '' ? [] : [loadedEquip.acc];
             }
@@ -638,13 +631,9 @@
         document.getElementById('val-reports').innerText = state.reportCount;
         document.getElementById('val-coins').innerText = state.coins;
         
-        // ショップ画面用のコイン表示も更新
         const shopCoins = document.getElementById('val-coins-shop');
         if(shopCoins) shopCoins.innerText = state.coins;
 
-        document.getElementById('val-affection').innerText = state.affection;
-
-        // 親愛度による画像の更新
         updateLancelotImage();
 
         const previewBtn = document.getElementById('btn-buy-preview');
@@ -660,39 +649,33 @@
     function updateLancelotImage() {
         const img = document.getElementById('lancelot-img');
         
-        // 親愛度の数値や読み込む画像ファイル名はここでお好きなように変更できます
         if (state.affection >= 100) {
-            img.src = 'lancelot_3.png'; // 親愛度100以上
+            img.src = 'lancelot_3.png'; 
         } else if (state.affection >= 50) {
-            img.src = 'lancelot_2.png'; // 親愛度50以上
+            img.src = 'lancelot_2.png'; 
         } else {
-            img.src = 'lancelot.png';   // 初期状態（親愛度50未満）
+            img.src = 'lancelot.png';   
         }
     }
 
-    // --- スマホ専用タブ切り替え ---
-    function switchMobileTab(tab) {
+    // --- PC・スマホ共通タブ切り替え ---
+    function switchMainTab(tab) {
         const uiArea = document.getElementById('ui-area');
         const btns = document.querySelectorAll('.m-tab-btn');
         
-        if (tab === 'main') {
-            uiArea.classList.remove('show-shop');
-            uiArea.classList.add('show-main');
-            btns[0].classList.add('active');
-            btns[1].classList.remove('active');
-        } else {
-            uiArea.classList.remove('show-main');
-            uiArea.classList.add('show-shop');
-            btns[0].classList.remove('active');
-            btns[1].classList.add('active');
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        uiArea.classList.remove('show-top', 'show-room', 'show-shop');
+        uiArea.classList.add(`show-${tab}`);
+        
+        btns.forEach(btn => btn.classList.remove('active'));
+        if (tab === 'top') btns[0].classList.add('active');
+        if (tab === 'room') btns[1].classList.add('active');
+        if (tab === 'shop') btns[2].classList.add('active');
     }
 
     // --- ルーム側カテゴリタブ切り替え ---
     function changeRoomTab(tab) {
         currentRoomTab = tab;
-        document.querySelectorAll('#section-main .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#section-room .tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tab}-room`).classList.add('active');
         renderRoomItems();
     }
@@ -714,7 +697,6 @@
         const catUnlocked = document.createElement('div');
         catUnlocked.className = 'shop-category';
 
-        // アクセサリーの時だけ表示する注意書き
         if (category === 'acc') {
             const notice = document.createElement('p');
             notice.style.fontSize = '12px';
@@ -726,7 +708,6 @@
         }
         
         const defBtn = document.createElement('button');
-        // アクセサリー(配列)かその他(文字列)かで判定を分ける
         const isDefEquipped = category === 'acc' 
             ? currentEquip.acc.length === 0 
             : currentEquip[category] === defaultEquip[category];
@@ -741,7 +722,6 @@
 
         ITEM_DB[category].forEach(item => {
             if (state.unlocked[item.id]) {
-                // 配列にファイル名が含まれているかで判定
                 const isEquipped = category === 'acc' 
                     ? currentEquip.acc.includes(item.file)
                     : currentEquip[category] === item.file;
@@ -790,14 +770,11 @@
         if (type === 'acc') {
             const avatarArea = document.getElementById('avatar-area');
             
-            // 動的に追加されたアクセサリレイヤーを一旦すべて削除
             avatarArea.querySelectorAll('.dynamic-acc').forEach(el => el.remove());
             
-            // 元々HTMLにあった空の #layer-acc は非表示固定にする
             const staticAcc = document.getElementById('layer-acc');
             if(staticAcc) staticAcc.style.display = 'none';
 
-            // 現在選択されているすべてのアクセサリを描画
             if (Array.isArray(file)) {
                 file.forEach(f => {
                     const img = document.createElement('img');
@@ -821,20 +798,17 @@
     // --- 装備のトグル（オンオフ）処理 ---
     function toggleEquip(type, file) {
         if (type === 'acc') {
-            // "何もつけない"が押された場合
             if (file === '') {
                 currentEquip.acc = [];
             } else {
-                // 配列の中に該当ファイルがあるかチェック
                 const idx = currentEquip.acc.indexOf(file);
                 if (idx > -1) {
-                    currentEquip.acc.splice(idx, 1); // あれば外す
+                    currentEquip.acc.splice(idx, 1);
                 } else {
-                    currentEquip.acc.push(file); // なければつける
+                    currentEquip.acc.push(file);
                 }
             }
         } else {
-            // 今までの服・背景の処理
             if (currentEquip[type] === file && file !== defaultEquip[type]) {
                 currentEquip[type] = defaultEquip[type];
             } else {
@@ -894,7 +868,6 @@
         state.unlocked[previewTarget.id] = true;
         setLancelotMessage(`新しいアイテム「${previewTarget.name}」を手に入れたな。クローゼットに入れておいたぞ。`);
         
-        // --- 追加: 購入エフェクトの生成 ---
         const btn = document.getElementById('btn-buy-preview');
         const rect = btn.getBoundingClientRect();
         const effectEl = document.createElement('div');
@@ -902,7 +875,7 @@
         effectEl.style.position = 'fixed';
         effectEl.style.left = (rect.left + rect.width / 2) + 'px';
         effectEl.style.top = rect.top + 'px';
-        effectEl.style.transform = 'translate(-50%, -50%)'; // 中央揃え
+        effectEl.style.transform = 'translate(-50%, -50%)';
         effectEl.style.color = '#f1c40f';
         effectEl.style.fontWeight = 'bold';
         effectEl.style.fontSize = '20px';
@@ -915,7 +888,6 @@
         setTimeout(() => {
             if (effectEl.parentNode) effectEl.parentNode.removeChild(effectEl);
         }, 1000);
-        // ---------------------------------
 
         previewTarget = null;
         document.getElementById('preview-img').style.display = 'none';
@@ -1016,7 +988,7 @@
             if (i < msg.length) {
                 box.innerText += msg.charAt(i);
                 i++;
-                typeWriterTimeout = setTimeout(type, 40); // 表示速度(ミリ秒)
+                typeWriterTimeout = setTimeout(type, 40);
             }
         }
         type();
@@ -1042,10 +1014,9 @@
         }, 1000);
     }
 
-    // --- ゲーム開始処理 (スタート画面でボタンを押した時に呼ばれる) ---
+    // --- ゲーム開始処理 ---
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
-        // 最初のメッセージを再生
         setLancelotMessage("お疲れさま。今日も古戦場を走るんだな。\n報告を待っているぞ。");
     }
 
