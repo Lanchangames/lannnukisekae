@@ -6,7 +6,7 @@
     <title>ランぬのわくわく古戦場！</title>
     
     <!-- iPhoneホーム画面用アイコンの設定 -->
-    <!-- <link rel="apple-touch-icon" href="avator.png"> -->
+    <!-- <link rel="apple-touch-icon" href="avatar.png"> -->
 
     <style>
         :root {
@@ -385,7 +385,7 @@
             古戦場の累計貢献度を報告してコインを獲得し、<br>
             アイテムを解放して自由に着せ替えを楽しもう！<br>
             
-            <img src="avator.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
+            <img src="avatar.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
         
         <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; border-radius: 30px; margin-bottom: 15px; background-color: var(--secondary);">はじめに読んでね</button><br>
@@ -433,7 +433,7 @@
     <div id="avatar-area">
         <!-- 初期状態で服と背景のsrcを空にし、display:noneで非表示に設定しました -->
         <img id="layer-bg" class="avatar-layer" style="z-index: 1; display:none;" src="" alt="背景">
-        <img id="layer-base" class="avatar-layer" style="z-index: 2;" src="avator.png" alt="素体">
+        <img id="layer-base" class="avatar-layer" style="z-index: 2;" src="avatar.png" alt="素体">
         <img id="layer-clothes" class="avatar-layer" style="z-index: 3; display:none;" src="" alt="服">
         <img id="layer-acc" class="avatar-layer" style="z-index: 4; display:none;" src="" alt="アクセ">
     </div>
@@ -465,7 +465,7 @@
                 <input type="number" id="input-score" placeholder="現在の累計貢献度を入力">
                 <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
                     <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;">報告する</button>
-                    <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #d35400;">貢献度修正<br>（コインは貯まりません）</button>
+                    <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br>（コインは貯まりません）</button>
                 </div>
             </div>
             <div id="cooldown-text"></div>
@@ -503,7 +503,7 @@
                 <div id="preview-panel">
                     <div id="preview-img-container" style="position: relative;">
                         <img id="preview-layer-bg" src="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; display: none; z-index: 1;">
-                        <img id="preview-layer-base" src="avator.png" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; opacity: 0.5; display: block; z-index: 2;">
+                        <img id="preview-layer-base" src="avatar.png" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; opacity: 0.5; display: block; z-index: 2;">
                         <img id="preview-img" src="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; object-fit: contain; display: none; z-index: 3;">
                     </div>
                     <div class="preview-info">
