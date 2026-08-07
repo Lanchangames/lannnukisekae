@@ -503,8 +503,8 @@
             <img src="avatar.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
         
-        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: var(--secondary);">はじめに読んでね</button><br>
-        <button onclick="startGame()" style="width: 260px; font-size: 18px; padding: 12px 0;">ゲームスタート</button>
+        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: #95a5a6;">はじめに読んでね</button><br>
+        <button onclick="startGame()" style="width: 260px; font-size: 18px; padding: 12px 0; background-color: var(--primary);">ゲームスタート</button>
     </div>
 
     <!-- はじめに読んでね モーダル -->
@@ -557,8 +557,10 @@
         <div id="avatar-area">
             <img id="layer-bg" class="avatar-layer" style="z-index: 1; display:none;" src="" alt="背景">
             <img id="layer-base" class="avatar-layer" style="z-index: 2;" src="avatar.png" alt="素体">
-            <img id="layer-clothes" class="avatar-layer" style="z-index: 3; display:none;" src="" alt="服">
-            <img id="layer-acc" class="avatar-layer" style="z-index: 4; display:none;" src="" alt="アクセ">
+            <img id="layer-setup" class="avatar-layer" style="z-index: 3; display:none;" src="" alt="セットアップ">
+            <img id="layer-tops" class="avatar-layer" style="z-index: 4; display:none;" src="" alt="トップス">
+            <img id="layer-bottoms" class="avatar-layer" style="z-index: 5; display:none;" src="" alt="ボトムス">
+            <img id="layer-acc" class="avatar-layer" style="z-index: 6; display:none;" src="" alt="アクセ">
         </div>
 
         <!-- メインUIエリア -->
@@ -606,9 +608,11 @@
             <div id="section-room">
                 <div class="shop-area" style="padding-top: 5px; margin-top: 0;">
                     <h3>クローゼット</h3>
-                    <div class="tab-container" style="margin-bottom: 10px;">
-                        <button class="tab-btn active" id="tab-clothes-room" onclick="changeRoomTab('clothes')">衣装</button>
-                        <button class="tab-btn" id="tab-acc-room" onclick="changeRoomTab('acc')">アクセサリー</button>
+                    <div class="tab-container" style="margin-bottom: 10px; overflow-x: auto;">
+                        <button class="tab-btn active" id="tab-setup-room" onclick="changeRoomTab('setup')">セットアップ</button>
+                        <button class="tab-btn" id="tab-tops-room" onclick="changeRoomTab('tops')">トップス</button>
+                        <button class="tab-btn" id="tab-bottoms-room" onclick="changeRoomTab('bottoms')">ボトムス</button>
+                        <button class="tab-btn" id="tab-acc-room" onclick="changeRoomTab('acc')">アクセ</button>
                         <button class="tab-btn" id="tab-bg-room" onclick="changeRoomTab('bg')">背景</button>
                     </div>
                     <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます</p>
@@ -627,9 +631,11 @@
                 </div>
 
                 <!-- ショップ内カテゴリタブ -->
-                <div class="tab-container">
-                    <button class="tab-btn active" id="tab-clothes-shop" onclick="changeShopTab('clothes')">衣装</button>
-                    <button class="tab-btn" id="tab-acc-shop" onclick="changeShopTab('acc')">アクセサリー</button>
+                <div class="tab-container" style="overflow-x: auto;">
+                    <button class="tab-btn active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</button>
+                    <button class="tab-btn" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</button>
+                    <button class="tab-btn" id="tab-bottoms-shop" onclick="changeShopTab('bottoms')">ボトムス</button>
+                    <button class="tab-btn" id="tab-acc-shop" onclick="changeShopTab('acc')">アクセ</button>
                     <button class="tab-btn" id="tab-bg-shop" onclick="changeShopTab('bg')">背景</button>
                 </div>
 
@@ -661,7 +667,7 @@
                 <div style="padding: 20px; background: #f9f9f9; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                     <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ / バックアップ</h3>
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--secondary);">データ出力(コピー)</button>
+                        <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: #7f8c8d;">データ出力(コピー)</button>
                         <button onclick="importData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--primary);">データ読込</button>
                     </div>
                     <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 80px; margin-top: 15px; padding: 10px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 8px; resize: none;"></textarea>
@@ -683,18 +689,20 @@
 
     // --- データベース管理 ---
     const ITEM_DB = {
-        clothes: [
-            { id: 'clothes1', name: 'ハートＴ', file: 'clothes_1.png', type: 'clothes' },
-            { id: 'clothes2', name: 'ビカラ服', file: 'clothes_2.png', type: 'clothes' },
-            { id: 'clothes3', name: 'カフェ店員', file: 'clothes_3.png', type: 'clothes' },
-            { id: 'clothes4', name: 'お出かけ服', file: 'clothes_4.png', type: 'clothes' },
-            { id: 'clothes5', name: 'パジャマ', file: 'clothes_5.png', type: 'clothes' },
-            { id: 'clothes6', name: '水着', file: 'clothes_6.png', type: 'clothes' },
-            { id: 'clothes7', name: 'ハロウィン', file: 'clothes_7.png', type: 'clothes' },
-            { id: 'clothes8', name: 'クリスマス', file: 'clothes_8.png', type: 'clothes' },
-            { id: 'clothes9', name: 'ドレス', file: 'clothes_9.png', type: 'clothes' },
-            { id: 'clothes10', name: '部屋着', file: 'clothes_10.png', type: 'clothes' }
+        setup: [
+            { id: 'clothes1', name: 'ハートＴ', file: 'clothes_1.png', type: 'setup' },
+            { id: 'clothes2', name: 'ビカラ服', file: 'clothes_2.png', type: 'setup' },
+            { id: 'clothes3', name: 'カフェ店員', file: 'clothes_3.png', type: 'setup' },
+            { id: 'clothes4', name: 'お出かけ服', file: 'clothes_4.png', type: 'setup' },
+            { id: 'clothes5', name: 'パジャマ', file: 'clothes_5.png', type: 'setup' },
+            { id: 'clothes6', name: '水着', file: 'clothes_6.png', type: 'setup' },
+            { id: 'clothes7', name: 'ハロウィン', file: 'clothes_7.png', type: 'setup' },
+            { id: 'clothes8', name: 'クリスマス', file: 'clothes_8.png', type: 'setup' },
+            { id: 'clothes9', name: 'ドレス', file: 'clothes_9.png', type: 'setup' },
+            { id: 'clothes10', name: '部屋着', file: 'clothes_10.png', type: 'setup' }
         ],
+        tops: [],
+        bottoms: [],
         acc: [
             { id: 'acc1', name: 'リボン', file: 'acc_1.png', type: 'acc' },
             { id: 'acc2', name: '花飾り', file: 'acc_2.png', type: 'acc' },
@@ -721,11 +729,11 @@
         ]
     };
 
-    const categoryNames = { clothes: "衣装", acc: "アクセサリー", bg: "背景" };
+    const categoryNames = { setup: "セットアップ", tops: "トップス", bottoms: "ボトムス", acc: "アクセサリー", bg: "背景" };
     
     // アクセサリーを複数持てるよう、初期値を配列([])に変更
-    const defaultEquip = { clothes: '', acc: [], bg: '' };
-    let currentEquip = { clothes: '', acc: [], bg: '' };
+    const defaultEquip = { setup: '', tops: '', bottoms: '', acc: [], bg: '' };
+    let currentEquip = { setup: '', tops: '', bottoms: '', acc: [], bg: '' };
     
     let state = {
         version: 1, 
@@ -741,8 +749,8 @@
     let currentMode = 'top'; 
     let currentSubTab = 'room';
     
-    let currentRoomTab = 'clothes'; // ルーム内のカテゴリ
-    let currentShopTab = 'clothes'; // ショップ内のカテゴリ
+    let currentRoomTab = 'setup'; // ルーム内のカテゴリ
+    let currentShopTab = 'setup'; // ショップ内のカテゴリ
 
     const COOLDOWN_MS = 60 * 60 * 10; // テスト用
     let previewTarget = null;
@@ -777,16 +785,25 @@
         if (savedEquip) {
             try {
                 let loadedEquip = JSON.parse(savedEquip);
+                // 旧形式からの移行処理
+                if (loadedEquip.clothes) {
+                    loadedEquip.setup = loadedEquip.clothes;
+                    delete loadedEquip.clothes;
+                }
+                if (!loadedEquip.setup) loadedEquip.setup = '';
+                if (!loadedEquip.tops) loadedEquip.tops = '';
+                if (!loadedEquip.bottoms) loadedEquip.bottoms = '';
+                
                 if (typeof loadedEquip.acc === 'string') {
                     loadedEquip.acc = loadedEquip.acc === '' ? [] : [loadedEquip.acc];
                 }
-                currentEquip = { ...currentEquip, ...loadedEquip };
+                currentEquip = { ...defaultEquip, ...currentEquip, ...loadedEquip };
             } catch (e) {
                 console.error("装備データの読み込みに失敗しました。初期状態から開始します。", e);
             }
         }
         
-        ['clothes', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
+        ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
     }
 
     // --- データ引継ぎ（エクスポート / インポート） ---
@@ -1017,9 +1034,7 @@
     function applyAvatarImage(type, file) {
         if (type === 'acc') {
             const avatarArea = document.getElementById('avatar-area');
-            
             avatarArea.querySelectorAll('.dynamic-acc').forEach(el => el.remove());
-            
             const staticAcc = document.getElementById('layer-acc');
             if(staticAcc) staticAcc.style.display = 'none';
 
@@ -1027,7 +1042,7 @@
                 file.forEach(f => {
                     const img = document.createElement('img');
                     img.className = 'avatar-layer dynamic-acc';
-                    img.style.zIndex = 4;
+                    img.style.zIndex = 6;
                     img.src = f;
                     avatarArea.appendChild(img);
                 });
@@ -1045,7 +1060,19 @@
 
     // --- 装備のトグル（オンオフ）処理 ---
     function toggleEquip(type, file) {
-        if (type === 'acc') {
+        // ロジック: セットアップ <-> トップス・ボトムスの排他処理
+        if (type === 'setup') {
+            currentEquip.setup = (currentEquip.setup === file && file !== '') ? '' : file;
+            if (currentEquip.setup !== '') {
+                currentEquip.tops = '';
+                currentEquip.bottoms = '';
+            }
+        } else if (type === 'tops' || type === 'bottoms') {
+            currentEquip[type] = (currentEquip[type] === file && file !== '') ? '' : file;
+            if (currentEquip.tops !== '' || currentEquip.bottoms !== '') {
+                currentEquip.setup = '';
+            }
+        } else if (type === 'acc') {
             if (file === '') {
                 currentEquip.acc = [];
             } else {
@@ -1057,14 +1084,16 @@
                 }
             }
         } else {
-            if (currentEquip[type] === file && file !== defaultEquip[type]) {
-                currentEquip[type] = defaultEquip[type];
-            } else {
-                currentEquip[type] = file;
-            }
+            // 背景などはそのまま
+            currentEquip[type] = (currentEquip[type] === file && file !== '') ? '' : file;
         }
         
-        applyAvatarImage(type, currentEquip[type]);
+        applyAvatarImage('setup', currentEquip.setup);
+        applyAvatarImage('tops', currentEquip.tops);
+        applyAvatarImage('bottoms', currentEquip.bottoms);
+        applyAvatarImage('acc', currentEquip.acc);
+        applyAvatarImage('bg', currentEquip.bg);
+        
         renderItems();
         saveGame(); 
     }
@@ -1272,12 +1301,14 @@
     }
 
     // --- 初期化 ---
-    ['clothes', 'acc', 'bg'].forEach(cat => {
-        ITEM_DB[cat].forEach(item => {
-            if (state.unlocked[item.id] === undefined) {
-                state.unlocked[item.id] = false;
-            }
-        });
+    ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(cat => {
+        if(ITEM_DB[cat]) {
+            ITEM_DB[cat].forEach(item => {
+                if (state.unlocked[item.id] === undefined) {
+                    state.unlocked[item.id] = false;
+                }
+            });
+        }
     });
 
     loadGame();
