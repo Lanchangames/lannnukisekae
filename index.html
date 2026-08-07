@@ -10,12 +10,11 @@
 
     <style>
         :root {
-            /* 全体カラーの刷新 */
-            --primary: #5fa8d3;    /* 青（情報・メイン） */
-            --secondary: #8da3b5;  /* サブカラー（グレー系から少し柔らかく） */
-            --accent: #f4a6b9;     /* ピンク（着せ替え） */
-            --reward: #f7c552;     /* 黄・オレンジ（報酬・強調） */
-            --bg: #fdf6f7;         /* 薄ピンクがかった白（温かみ） */
+            /* 全体カラーの差し戻し */
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --bg: #ecf0f1;
             --text: #333;
         }
         body {
@@ -116,12 +115,13 @@
             position: relative;
             width: 360px;
             height: 480px;
-            border: 3px solid #ffffff;
+            border: 2px solid #bdc3c7;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* 柔らかい影で引き立てる */
             overflow: hidden;
             background-color: #fff;
             flex-shrink: 0;
+            transition: max-width 0.3s, height 0.3s;
         }
         .avatar-layer {
             position: absolute;
@@ -180,7 +180,7 @@
         .m-tab-btn {
             flex: 1;
             padding: 12px;
-            background: #ffffff;
+            background: #ecf0f1;
             border: 1px solid #bdc3c7;
             color: var(--secondary);
             font-size: 16px;
@@ -201,15 +201,15 @@
         .sub-tab-btn {
             flex: 1;
             padding: 10px;
-            background: #ffffff;
+            background: #ecf0f1;
             border: 1px solid #bdc3c7;
             color: var(--secondary);
             font-size: 14px;
         }
         .sub-tab-btn.active {
-            background: var(--accent); /* ピンク */
+            background: #8e44ad; 
             color: white;
-            border-color: var(--accent);
+            border-color: #8e44ad;
         }
 
         /* ----- 各セクションの表示制御 ----- */
@@ -239,10 +239,15 @@
         #ui-area.show-data #section-shop,
         #ui-area.show-data #sub-nav { display: none !important; }
 
+        /* データタブでアバター画像を非表示 */
+        #game-container.mode-data #avatar-area {
+            display: none;
+        }
+
         #lancelot-area {
             display: flex;
             gap: 10px;
-            background: #ffffff;
+            background: #e8f4f8;
             padding: 15px;
             border-radius: 12px;
             border-left: 5px solid var(--primary);
@@ -324,7 +329,7 @@
         }
         .shop-category {
             margin-bottom: 15px;
-            background: #ffffff;
+            background: #f9f9f9;
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -344,17 +349,17 @@
             box-shadow: 0 0 0 rgba(0,0,0,0.1);
         }
         /* 未開放用ボタン */
-        .item-btn { background-color: #ecf0f1; color: #555; }
+        .item-btn { background-color: #7f8c8d; color: white; }
         /* クローゼット用ボタン */
-        .equip-btn { background-color: var(--accent); color: white; }
+        .equip-btn { background-color: #8e44ad; color: white; }
         /* 装備中アピール */
-        .equip-btn.active-equip { background-color: var(--reward); color: #333; }
+        .equip-btn.active-equip { background-color: #e67e22; border: 2px solid #d35400; padding: 6px 10px; color: white; }
         
         /* プレビュー枠 */
         #preview-panel {
             display: flex;
             gap: 15px;
-            background: #ffffff;
+            background: #e8f4f8;
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 15px;
@@ -364,7 +369,7 @@
             width: 100px;
             height: 120px;
             background: rgba(255, 255, 255, 0.7);
-            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             border-radius: 8px;
@@ -391,7 +396,7 @@
             padding-bottom: 5px;
         }
         .tab-btn {
-            background-color: #ffffff;
+            background-color: #ecf0f1;
             color: var(--secondary);
             border: 1px solid #bdc3c7;
             padding: 8px 15px;
@@ -409,7 +414,7 @@
             border-color: var(--primary);
         }
 
-        /* ----- スマホ専用レイアウト (Split View) ----- */
+        /* ----- スマホ専用レイアウト ----- */
         @media (max-width: 768px) {
             #game-container {
                 max-height: none;
@@ -425,15 +430,22 @@
             }
             body { padding: 0 0 50px 0; }
             
-            /* 【Split View】アバターを常に上部に固定 */
             #avatar-area {
-                position: sticky;
-                top: 10px;
-                z-index: 50;
                 width: 100%;
                 max-width: 252px;
                 height: 336px; 
                 margin: 0 auto;
+                position: relative;
+            }
+
+            /* 【着せ替えモード時】アバターを小型化＆上部固定 */
+            #game-container.mode-dressup #avatar-area {
+                position: sticky;
+                top: 10px;
+                z-index: 50;
+                max-width: 150px; /* 小さく */
+                height: 200px;    /* 小さく */
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             }
 
             #ui-area {
@@ -509,7 +521,7 @@
             <h2>ご感想はこちらから</h2>
             <p style="text-align: center; margin-top: 20px;">
                 <a href="https://x.com/mhks_dora/status/2082801864761016513" target="_blank" style="text-decoration: none;">
-                    <button style="font-size: 18px; padding: 12px 40px; background-color: var(--primary);">気軽に送ってね</button>
+                    <button style="font-size: 18px; padding: 12px 40px; background-color: var(--accent);">気軽に送ってね</button>
                 </a>
             </p>
 
@@ -523,7 +535,7 @@
     </div>
 </div>
 
-<div id="game-container">
+<div id="game-container" class="mode-top">
     
     <!-- 大タブ（常に一番上に表示） -->
     <div id="main-nav">
@@ -576,7 +588,7 @@
                     <input type="number" id="input-score" placeholder="現在の累計貢献度を入力">
                     <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
                         <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;">報告する</button>
-                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #e74c3c;">貢献度修正<br><span style="font-size:10px;">（コイン無）</span></button>
+                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br><span style="font-size:10px;">（コイン無）</span></button>
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
@@ -624,7 +636,7 @@
                         <div class="preview-info">
                             <h4 id="preview-name" style="font-size: 16px; margin:0;">アイテムを選択してください</h4>
                             <p id="preview-desc">未解放リストからアイテムを選ぶと、絵柄を確認できます。</p>
-                            <button id="btn-buy-preview" style="display:none; background-color: var(--reward); color: #333;" onclick="buyPreviewItem()">500コインで解放</button>
+                            <button id="btn-buy-preview" style="display:none; background-color: #27ae60; color: white;" onclick="buyPreviewItem()">500コインで解放</button>
                         </div>
                     </div>
                 </div>
@@ -638,7 +650,7 @@
 
             <!-- データ画面の要素 (設定・バックアップ) -->
             <div id="section-data">
-                <div style="padding: 20px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="padding: 20px; background: #f9f9f9; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                     <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ / バックアップ</h3>
                     <div style="display: flex; gap: 10px;">
                         <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--secondary);">データ出力(コピー)</button>
@@ -850,20 +862,27 @@
     // --- 大タブ切り替え (トップ / 着せ替え / データ) ---
     function switchMainTab(mode) {
         currentMode = mode;
+        const gc = document.getElementById('game-container');
         const uiArea = document.getElementById('ui-area');
         const btns = document.querySelectorAll('#main-nav .m-tab-btn');
         
         btns.forEach(btn => btn.classList.remove('active'));
         
+        // 全モードクラスを一度削除
+        gc.classList.remove('mode-top', 'mode-dressup', 'mode-data');
+        
         if (mode === 'top') {
             btns[0].classList.add('active');
+            gc.classList.add('mode-top');
             uiArea.className = 'show-top';
         } else if (mode === 'dressup') {
             btns[1].classList.add('active');
+            gc.classList.add('mode-dressup');
             // 着せ替えモード時は、前回開いていた小タブ（ルームかショップ）を復元
             uiArea.className = `show-${currentSubTab}`;
         } else if (mode === 'data') {
             btns[2].classList.add('active');
+            gc.classList.add('mode-data');
             uiArea.className = 'show-data';
         }
         
