@@ -462,6 +462,16 @@
                 </div>
             </div>
             <div id="cooldown-text"></div>
+
+            <!-- 追加: データ引継ぎ / バックアップ UI -->
+            <div style="margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                <h4 style="margin: 0 0 10px 0; color: var(--secondary);">データ引継ぎ / バックアップ</h4>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="exportData()" style="padding: 8px 12px; font-size: 13px; flex: 1; background-color: #7f8c8d;">データ出力(コピー)</button>
+                    <button onclick="importData()" style="padding: 8px 12px; font-size: 13px; flex: 1; background-color: #27ae60;">データ読込</button>
+                </div>
+                <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 60px; margin-top: 10px; padding: 8px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; resize: none;"></textarea>
+            </div>
         </div>
 
         <!-- ルーム画面の要素 -->
@@ -573,6 +583,7 @@
     let currentEquip = { clothes: '', acc: [], bg: '' };
     
     let state = {
+        version: 1, // バージョン管理用プロパティの追加
         totalScore: 0,
         reportCount: 0,
         coins: 0,
@@ -603,21 +614,70 @@
         const savedEquip = localStorage.getItem(SAVE_KEY_EQUIP);
         
         if (savedState) {
-            const parsedState = JSON.parse(savedState);
-            state = { ...state, ...parsedState };
-            if (parsedState.unlocked) {
-                state.unlocked = { ...state.unlocked, ...parsedState.unlocked };
+            try {
+                const parsedState = JSON.parse(savedState);
+                state = { ...state, ...parsedState };
+                if (parsedState.unlocked) {
+                    state.unlocked = { ...state.unlocked, ...parsedState.unlocked };
+                }
+                state.version = 1; // 常に最新バージョンとして処理
+            } catch (e) {
+                console.error("セーブデータの読み込みに失敗しました。初期状態から開始します。", e);
             }
         }
         if (savedEquip) {
-            let loadedEquip = JSON.parse(savedEquip);
-            if (typeof loadedEquip.acc === 'string') {
-                loadedEquip.acc = loadedEquip.acc === '' ? [] : [loadedEquip.acc];
+            try {
+                let loadedEquip = JSON.parse(savedEquip);
+                if (typeof loadedEquip.acc === 'string') {
+                    loadedEquip.acc = loadedEquip.acc === '' ? [] : [loadedEquip.acc];
+                }
+                currentEquip = { ...currentEquip, ...loadedEquip };
+            } catch (e) {
+                console.error("装備データの読み込みに失敗しました。初期状態から開始します。", e);
             }
-            currentEquip = { ...currentEquip, ...loadedEquip };
         }
         
         ['clothes', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
+    }
+
+    // --- データ引継ぎ（エクスポート / インポート） ---
+    function exportData() {
+        try {
+            const data = { state: state, equip: currentEquip };
+            const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+            const textarea = document.getElementById('backup-code');
+            textarea.value = encoded;
+            textarea.select();
+            document.execCommand('copy');
+            alert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
+        } catch (e) {
+            alert("コードの出力に失敗しました。");
+        }
+    }
+
+    function importData() {
+        const textarea = document.getElementById('backup-code');
+        const code = textarea.value.trim();
+        if (!code) {
+            alert("バックアップコードを入力してください。");
+            return;
+        }
+        try {
+            const decoded = JSON.parse(decodeURIComponent(atob(code)));
+            if (decoded.state && decoded.equip) {
+                if(confirm("現在のデータは上書きされます。本当によろしいですか？")) {
+                    state = decoded.state;
+                    currentEquip = decoded.equip;
+                    saveGame();
+                    alert("データを読み込みました！");
+                    location.reload();
+                }
+            } else {
+                alert("無効なバックアップデータです。");
+            }
+        } catch (e) {
+            alert("コードの読み込みに失敗しました。正しいコードか確認してください。");
+        }
     }
 
     // --- セリフ集 ---
@@ -922,14 +982,18 @@
         let isOverwork = false;
         if (state.lastReportTime !== 0) {
             const timeDiffMs = now - state.lastReportTime;
-            const hours = timeDiffMs / (1000 * 60 * 60);
-            if (hours > 0) {
-                const pace = diff / hours;
+            const timeDiffMins = timeDiffMs / (1000 * 60);
+            
+            if (timeDiffMins > 0) {
+                // 30分あたりのペースを計算
+                const pacePer30Min = (diff / timeDiffMins) * 30;
+                
                 if (diff <= 10000) {
                     setLancelotMessage("うーん、もう少し頑張らないか？");
                     return;
                 }
-                if (pace >= 1000000000) {
+                
+                if (pacePer30Min >= 500000000) { // 30分につき5億以上の増加ペース
                     isOverwork = true;
                 }
             }
