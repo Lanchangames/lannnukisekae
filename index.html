@@ -128,7 +128,8 @@
             border-radius: 12px;
             border: 2px solid #cbd5e1;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-height: 90vh;
+            max-height: 90vh; /* ここで高さを制限 */
+            overflow: hidden; /* コンテナ自体はスクロールさせない */
         }
         
         #content-wrapper {
@@ -163,9 +164,18 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            overflow-y: auto;
+            /* overflow-y: auto; を削除 */
             padding-right: 10px;
-            padding-bottom: 50px;
+            padding-bottom: 0;
+            overflow: hidden; /* コンテナ内をスクロールさせない */
+        }
+
+        /* アイテムリストのコンテナに高さを設定してスクロール可能にする */
+        #unlocked-list, #locked-list {
+            flex: 1;
+            overflow-y: auto; /* 枠内だけスクロール */
+            max-height: 400px; /* ここでお好みの高さに調整してください */
+            padding-right: 5px;
         }
 
         /* ----- ボタンデザイン (白くなる挙動を廃止し自然なフィードバックへ) ----- */
@@ -446,7 +456,77 @@
         h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
         h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
         
-        /* 視認性を高めたアイテムボタンと装備中ボタン */
+        /* ----- カード形式アイテム一覧用のCSS追加 ----- */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            padding-top: 5px;
+        }
+        .item-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+            border-radius: 8px;
+            border: 1px solid #94a3b8;
+            background-color: #ffffff;
+            color: var(--secondary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.2s ease, border-color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .item-card:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: var(--accent);
+        }
+        .item-card:active:not(:disabled) {
+            background-color: #ffffff;
+            transform: scale(0.97);
+        }
+        .item-card.active-equip {
+            background-color: var(--primary);
+            border: 2px solid var(--primary);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        }
+        .item-card.active-equip:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .item-card img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .item-card .no-image {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: normal;
+        }
+        .item-card span {
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.2;
+            word-break: break-word;
+            pointer-events: none;
+        }
+        
+        /* 視認性を高めたアイテムボタンと装備中ボタン (既存のスタイル・プレビュー等一部で使用) */
         .item-btn, .equip-btn {
             margin: 4px;
             font-size: 13px;
@@ -466,7 +546,6 @@
             background-color: #ffffff;
             transform: scale(0.97);
         }
-        /* 装備中（アクティブ）は濃い青系統でくっきり強調 */
         .equip-btn.active-equip {
             background-color: var(--primary);
             border: 2px solid var(--primary);
@@ -603,11 +682,31 @@
         <div id="info-content">
             <h2>遊びかた</h2>
             <p>
-                1. 現在の古戦場の累計貢献度を入力して「報告する」ボタンを押します。<br>
-                2. 報告を行うと、コインと親愛度が貯まります。<br>
-                3. 貯まったコインを使い、ショップ画面からアイテムを解放しましょう。<br>
-                4. 解放したアイテムは、クローゼット画面から自由に着せ替え可能です。<br>
-                5. 貢献度を間違えてしまった場合は、「貢献度修正」ボタンで正しい数値に修正できます（コイン等は貯まりません）。
+                古戦場の累計貢献度を報告してコインを獲得し、アイテムを解放して自由に着せ替えを楽しむアプリです。<br>
+                画面上部の「大タブ」を切り替えて遊びます。
+            </p>
+
+            <h2>トップ</h2>
+            <p>
+                現在の古戦場の累計貢献度を入力して「報告する」ボタンを押してください。<br>
+                ・報告を行うと、コインと親愛度が貯まります。<br>
+                ・貢献度を間違えてしまった場合は、「貢献度修正」ボタンで正しい数値に修正できます（コイン等は貯まりません）。
+            </p>
+
+            <h2>着せ替え</h2>
+            <p>
+                <strong>【ショップ】</strong><br>
+                貯まったコインを使ってアイテムを解放できます。アイテムを選択するとプレビューが表示され、解放ボタンが現れます。<br>
+                <br>
+                <strong>【クローゼット】</strong><br>
+                ショップで解放したアイテムを使って、自由に着せ替えを楽しめます。<br>
+                ・アイテム一覧は枠内でスクロール可能です。<br>
+                ・アクセサリーは同時に複数つけることができ、着用中のアイテムを再度タップすると外せます。
+            </p>
+
+            <h2>データ</h2>
+            <p>
+                データの引継ぎやバックアップを行えます。ブラウザの履歴削除などを行う前に、定期的にデータ出力（コピー）をしておくことをお勧めします。
             </p>
 
             <h2>注意事項</h2>
@@ -764,7 +863,7 @@
             <!-- データ画面の要素 -->
             <div id="section-data">
                 <div style="padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #cbd5e1;">
-                    <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ / バックアップ</h3>
+                    <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ /バックアップ</h3>
                     
                     <div style="font-size: 13px; line-height: 1.6; margin-bottom: 20px; color: #555;">
                         <strong>【データの取り扱いについて】</strong><br>
@@ -1209,18 +1308,30 @@
             catUnlocked.appendChild(notice);
         }
         
-        const defBtn = document.createElement('button');
+        const grid = document.createElement('div');
+        grid.className = 'item-grid';
+
+        const defBtn = document.createElement('div');
         const isDefEquipped = category === 'acc' 
             ? currentEquip.acc.length === 0 
             : currentEquip[category] === defaultEquip[category];
 
-        defBtn.className = isDefEquipped ? 'equip-btn active-equip' : 'equip-btn';
-        defBtn.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
+        defBtn.className = isDefEquipped ? 'item-card active-equip' : 'item-card';
         defBtn.onclick = () => {
             if (category === 'acc') toggleEquip('acc', '');
             else toggleEquip(category, defaultEquip[category]);
         };
-        catUnlocked.appendChild(defBtn);
+        
+        const defImg = document.createElement('div');
+        defImg.className = 'no-image';
+        defImg.innerText = 'OFF';
+        
+        const defText = document.createElement('span');
+        defText.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
+        
+        defBtn.appendChild(defImg);
+        defBtn.appendChild(defText);
+        grid.appendChild(defBtn);
 
         ITEM_DB[category].forEach(item => {
             if (state.unlocked[item.id]) {
@@ -1228,13 +1339,31 @@
                     ? currentEquip.acc.includes(item.file)
                     : currentEquip[category] === item.file;
                 
-                const btn = document.createElement('button');
-                btn.className = isEquipped ? 'equip-btn active-equip' : 'equip-btn';
-                btn.innerText = item.name;
-                btn.onclick = () => toggleEquip(item.type, item.file);
-                catUnlocked.appendChild(btn);
+                const card = document.createElement('div');
+                card.className = isEquipped ? 'item-card active-equip' : 'item-card';
+                card.onclick = () => toggleEquip(item.type, item.file);
+                
+                const img = document.createElement('img');
+                img.src = item.file;
+                img.onerror = function() {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'no-image';
+                    fallback.innerText = 'NoImg';
+                    if (this.parentNode) {
+                        this.parentNode.replaceChild(fallback, this);
+                    }
+                };
+                
+                const text = document.createElement('span');
+                text.innerText = item.name;
+
+                card.appendChild(img);
+                card.appendChild(text);
+                grid.appendChild(card);
             }
         });
+        
+        catUnlocked.appendChild(grid);
         unlockedContainer.appendChild(catUnlocked);
     }
 
@@ -1248,19 +1377,43 @@
         
         const catLocked = document.createElement('div');
         catLocked.className = 'shop-category';
+        
+        const grid = document.createElement('div');
+        grid.className = 'item-grid';
         let hasLocked = false;
 
         ITEM_DB[category].forEach(item => {
             if (!state.unlocked[item.id]) {
-                const btn = document.createElement('button');
-                btn.className = 'item-btn';
-                btn.innerText = item.name;
-                btn.onclick = () => showPreview(item);
-                catLocked.appendChild(btn);
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.onclick = () => showPreview(item);
+
+                const img = document.createElement('img');
+                img.src = item.file;
+                img.onerror = function() {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'no-image';
+                    fallback.innerText = 'NoImg';
+                    if (this.parentNode) {
+                        this.parentNode.replaceChild(fallback, this);
+                    }
+                };
+
+                const text = document.createElement('span');
+                text.innerText = item.name;
+
+                card.appendChild(img);
+                card.appendChild(text);
+
+                grid.appendChild(card);
                 hasLocked = true;
             }
         });
-        if (hasLocked) lockedContainer.appendChild(catLocked);
+        
+        if (hasLocked) {
+            catLocked.appendChild(grid);
+            lockedContainer.appendChild(catLocked);
+        }
     }
 
     function renderItems() {
