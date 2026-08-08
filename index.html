@@ -44,7 +44,7 @@
         #start-box {
             background: white;
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 8px; /* フラット化に伴い角丸を縮小 */
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             width: 90%;
@@ -70,7 +70,7 @@
         #info-content {
             background: white;
             padding: 30px;
-            border-radius: 16px;
+            border-radius: 8px;
             max-width: 500px;
             width: 85%;
             max-height: 80vh;
@@ -89,6 +89,38 @@
         #info-content p { font-size: 14px; line-height: 1.6; margin-top: 10px; color: #555; }
         .close-btn { display: block; margin: 30px auto 0; }
 
+        /* カスタムモーダル (アラート/コンファーム用) */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+        }
+        .custom-modal-content {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            width: 80%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .custom-modal-content p {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: var(--text);
+            white-space: pre-wrap;
+            margin-top: 0;
+        }
+        .custom-modal-content button {
+            padding: 10px 30px;
+            font-size: 14px;
+        }
+
         /* ----- 画面の基本骨格 ----- */
         #game-container {
             display: flex;
@@ -97,8 +129,9 @@
             width: 950px;
             background: white;
             padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 8px; /* フラット化 */
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
             max-height: 90vh;
         }
         
@@ -115,10 +148,8 @@
             position: relative;
             width: 360px;
             height: 480px;
-            border: 2px solid #bdc3c7;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* 柔らかい影で引き立てる */
-            overflow: hidden;
+            border: 1px solid #e0e0e0; /* 影から枠線へ変更 */
+            border-radius: 8px;
             background-color: #fff;
             flex-shrink: 0;
             transition: max-width 0.3s, height 0.3s;
@@ -144,124 +175,134 @@
             padding-bottom: 50px;
         }
 
-        /* ----- 共通ボタンデザイン (ソシャゲ風) ----- */
+        /* ----- 共通ボタンデザイン (フラット化) ----- */
         button {
             padding: 10px 20px;
             background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px; /* 角丸大きく */
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1); /* 軽い影 */
-            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+            transition: 0.2s;
         }
         button:hover:not(:disabled) {
-            filter: brightness(1.05);
+            filter: brightness(1.1);
         }
-        /* 押した時に沈むアニメーション */
         button:active:not(:disabled) {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 rgba(0,0,0,0.1);
+            filter: brightness(0.9);
         }
         button:disabled {
-            background-color: #95a5a6;
+            background-color: #bdc3c7;
             cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
         }
 
-        /* ----- ふせん風タブデザイン (大タブ & カテゴリタブ) ----- */
-        .tabs-wrapper {
+        /* ----- 階層1: 大タブ (画面幅3分割) ----- */
+        #main-nav {
             display: flex;
+            width: 100%;
             border-bottom: 2px solid var(--primary);
             margin-bottom: 15px;
-            gap: 4px;
-            flex-shrink: 0;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            padding: 0;
+            gap: 0;
         }
-        .tabs-wrapper::-webkit-scrollbar { display: none; /* Chrome, Safari */ }
-        
         .tab-item {
-            padding: 10px 15px;
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
             background-color: #ecf0f1;
-            border: 2px solid #bdc3c7;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
             color: var(--secondary);
-            font-size: 14px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: -2px; /* 下線に被せる */
             transition: background-color 0.2s, color 0.2s;
-            white-space: nowrap;
         }
         .tab-item:hover {
             background-color: #e0e6ed;
         }
         .tab-item.active {
-            background-color: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            border-bottom: 2px solid white; /* 下の線を隠す */
+            background-color: var(--primary);
+            color: white;
         }
 
-        /* ----- 衣装用のさらに小さなタブ (サブカテゴリ) ----- */
-        .sub-tabs-wrapper {
-            display: none; /* デフォルト非表示、JSで制御 */
-            border-bottom: 1px solid var(--primary);
-            margin-top: -10px;
-            margin-bottom: 15px;
-            gap: 4px;
-            padding-left: 10px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .sub-tabs-wrapper::-webkit-scrollbar { display: none; }
-        
-        .sub-tab-item {
-            padding: 6px 12px;
-            background-color: #ecf0f1;
-            border: 1px solid #bdc3c7;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            color: var(--secondary);
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: -1px;
-            transition: background-color 0.2s, color 0.2s;
-            white-space: nowrap;
-        }
-        .sub-tab-item.active {
-            background-color: white;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            border-bottom: 1px solid white;
-        }
-
-        /* ----- 小タブナビゲーション (着せ替え内 ルーム/ショップ) ----- */
+        /* ----- 階層2: 中タブ (着せ替え内 ルーム/ショップ・画面幅2分割) ----- */
         #sub-nav {
             display: none;
-            gap: 10px;
-            margin-bottom: 5px;
-            flex-shrink: 0;
+            width: 100%;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #bdc3c7;
+            gap: 0;
         }
         .sub-tab-btn {
             flex: 1;
-            padding: 10px;
-            background: #ecf0f1;
-            border: 1px solid #bdc3c7;
-            color: var(--secondary);
+            text-align: center;
+            padding: 10px 0;
+            background: transparent;
+            color: #7f8c8d;
             font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0;
+        }
+        .sub-tab-btn:hover {
+            color: var(--secondary);
         }
         .sub-tab-btn.active {
-            background: #8e44ad; 
-            color: white;
-            border-color: #8e44ad;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            background: transparent;
+        }
+
+        /* ----- 階層3: カテゴリタブ (カプセル型) ----- */
+        .cat-tabs-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .cat-tabs-wrapper::-webkit-scrollbar { display: none; }
+        .cat-tab-item {
+            padding: 6px 16px;
+            background-color: #f1f2f6;
+            color: #7f8c8d;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .cat-tab-item.active {
+            background-color: #fff;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* ----- 階層4: サブカテゴリ (テキスト＋細い下線) ----- */
+        .sub-cat-tabs-wrapper {
+            display: none;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-left: 5px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .sub-cat-tabs-wrapper::-webkit-scrollbar { display: none; }
+        .sub-cat-tab-item {
+            font-size: 12px;
+            color: #95a5a6;
+            cursor: pointer;
+            font-weight: bold;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .sub-cat-tab-item.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
         }
 
         /* ----- 各セクションの表示制御 ----- */
@@ -291,19 +332,19 @@
         #ui-area.show-data #section-shop,
         #ui-area.show-data #sub-nav { display: none !important; }
 
-        /* データタブでアバター画像を非表示 */
         #game-container.mode-data #avatar-area {
             display: none;
         }
 
+        /* フラットデザイン向けコンテナの調整 */
         #lancelot-area {
             display: flex;
             gap: 10px;
-            background: #e8f4f8;
+            background: #f8fbfc;
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             border-left: 5px solid var(--primary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             flex-shrink: 0;
         }
         #lancelot-img {
@@ -314,7 +355,6 @@
             background: #ccc;
             flex-shrink: 0;
         }
-        /* タイプライター演出のために改行指定を追加 */
         #message-box {
             flex: 1;
             font-size: 16px;
@@ -324,7 +364,6 @@
             white-space: pre-wrap;
         }
         
-        /* ステータスカード風デザイン */
         .status-container {
             display: flex;
             gap: 10px;
@@ -333,11 +372,11 @@
         }
         .status-card {
             flex: 1;
-            background: #ffffff;
-            border-radius: 12px;
+            background: #fcfcfc;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
             padding: 10px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             font-weight: bold;
             color: var(--text);
             display: flex;
@@ -346,14 +385,8 @@
             justify-content: center;
             gap: 5px;
         }
-        .status-card .label {
-            font-size: 12px;
-            color: #666;
-        }
-        .status-card .val {
-            font-size: 16px;
-            color: var(--primary);
-        }
+        .status-card .label { font-size: 12px; color: #666; }
+        .status-card .val { font-size: 16px; color: var(--primary); }
 
         .input-group {
             display: flex;
@@ -365,55 +398,48 @@
             padding: 12px;
             font-size: 16px;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 6px;
             flex: 1;
         }
-        
-        #cooldown-text {
-            color: #e74c3c;
-            font-size: 14px;
-            font-weight: bold;
-        }
+        #cooldown-text { color: #e74c3c; font-size: 14px; font-weight: bold; }
         
         /* ショップ・クローゼットUI */
         .shop-area {
-            border-top: none; /* 枠線廃止 */
+            border-top: none; 
         }
         .shop-category {
             margin-bottom: 15px;
-            background: #f9f9f9;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
             padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
         }
         h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
         h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
         
+        /* アイテムボタン (見やすくフラットに調整) */
         .item-btn, .equip-btn {
             margin: 4px;
             font-size: 13px;
             padding: 8px 12px;
-            border-radius: 8px;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+            border-radius: 4px;
         }
-        .item-btn:active:not(:disabled), .equip-btn:active:not(:disabled) {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 rgba(0,0,0,0.1);
-        }
-        /* 未開放用ボタン */
-        .item-btn { background-color: #7f8c8d; color: white; }
-        /* クローゼット用ボタン */
-        .equip-btn { background-color: #8e44ad; color: white; }
-        /* 装備中アピール */
-        .equip-btn.active-equip { background-color: #e67e22; border: 2px solid #d35400; padding: 6px 10px; color: white; }
+        .item-btn { background-color: #f1f2f6; border: 1px solid #ced6e0; color: #57606f; }
+        .item-btn:hover:not(:disabled) { background-color: #dfe4ea; }
+        
+        .equip-btn { background-color: #f1f2f6; border: 1px solid var(--primary); color: var(--primary); }
+        .equip-btn:hover:not(:disabled) { background-color: #e4e7ea; }
+        
+        .equip-btn.active-equip { background-color: var(--primary); border: 1px solid var(--primary); color: white; }
         
         /* プレビュー枠 */
         #preview-panel {
             display: flex;
             gap: 15px;
-            background: #e8f4f8;
+            background: #f8fbfc;
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             margin-bottom: 15px;
             align-items: center;
         }
@@ -421,23 +447,18 @@
             width: 100px;
             height: 120px;
             background: rgba(255, 255, 255, 0.7);
-            background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-image: linear-gradient(45deg, #eee 25%, transparent 25%), linear-gradient(-45deg, #eee 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #eee 75%), linear-gradient(-45deg, transparent 75%, #eee 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            border-radius: 8px;
-            border: 1px solid #eee;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             position: relative;
         }
-        #preview-img {
-            max-width: 90%;
-            max-height: 90%;
-            display: none;
-            object-fit: contain;
-        }
+        #preview-img { max-width: 90%; max-height: 90%; display: none; object-fit: contain; }
         .preview-info { flex: 1; }
         .preview-info p { margin: 5px 0 15px 0; font-size: 14px; }
 
@@ -449,10 +470,12 @@
                 box-sizing: border-box;
                 padding: 10px;
                 gap: 10px;
+                border: none;
+                border-radius: 0;
             }
             #content-wrapper {
-                flex-direction: column; /* 縦積みに */
-                overflow: visible; /* スマホではスクロールをボディに任せる */
+                flex-direction: column;
+                overflow: visible;
                 gap: 10px;
             }
             body { padding: 0 0 50px 0; }
@@ -465,18 +488,16 @@
                 position: relative;
             }
 
-            /* 【着せ替えモード時】アバターを小型化 (上部固定は解除) */
             #game-container.mode-dressup #avatar-area {
-                max-width: 150px; /* 小さく */
-                height: 200px;    /* 小さく */
+                max-width: 150px; 
+                height: 200px;    
                 margin: 0 auto;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                border: 1px solid #ccc;
             }
 
-            /* アイテム欄のみスクロール可能にする */
             #game-container.mode-dressup #unlocked-list,
             #game-container.mode-dressup #locked-list {
-                max-height: 35vh; /* 画面サイズに合わせてスクロール領域を確保 */
+                max-height: 35vh; 
                 overflow-y: auto;
                 border-top: 1px dashed #bdc3c7;
                 padding-top: 10px;
@@ -487,18 +508,10 @@
                 overflow-y: visible;
                 padding-right: 0;
             }
-            .status-container {
-                gap: 5px;
-            }
-            .status-card {
-                padding: 8px 5px;
-            }
-            .status-card .label {
-                font-size: 10px;
-            }
-            .status-card .val {
-                font-size: 14px;
-            }
+            .status-container { gap: 5px; }
+            .status-card { padding: 8px 5px; }
+            .status-card .label { font-size: 10px; }
+            .status-card .val { font-size: 14px; }
             .input-group {
                 flex-direction: column;
                 align-items: stretch;
@@ -522,7 +535,6 @@
 <!-- スタート画面 (ゲーム開始前に表示されます) -->
 <div id="start-screen">
     <div id="start-box">
-        <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
         <p style="line-height: 1.6; margin-bottom: 25px; font-size: 15px; color: #555;">
             古戦場の累計貢献度を報告してコインを獲得し、<br>
             アイテムを解放して自由に着せ替えを楽しもう！<br>
@@ -572,8 +584,8 @@
 
 <div id="game-container" class="mode-top">
     
-    <!-- 大タブ（ふせん風） -->
-    <div id="main-nav" class="tabs-wrapper">
+    <!-- 大タブ（フラット） -->
+    <div id="main-nav">
         <div class="tab-item active" onclick="switchMainTab('top')">トップ</div>
         <div class="tab-item" onclick="switchMainTab('dressup')">着せ替え</div>
         <div class="tab-item" onclick="switchMainTab('data')">データ</div>
@@ -636,18 +648,18 @@
                 <div class="shop-area" style="padding-top: 5px; margin-top: 0;">
                     <h3>クローゼット</h3>
                     
-                    <!-- ルームカテゴリタブ (ふせん風) -->
-                    <div class="tabs-wrapper" id="room-category-tabs">
-                        <div class="tab-item active" id="cat-clothes-room" onclick="changeRoomCategory('clothes')">衣装</div>
-                        <div class="tab-item" id="cat-acc-room" onclick="changeRoomCategory('acc')">アクセサリー</div>
-                        <div class="tab-item" id="cat-bg-room" onclick="changeRoomCategory('bg')">背景</div>
+                    <!-- ルームカテゴリタブ (カプセル型) -->
+                    <div class="cat-tabs-wrapper" id="room-category-tabs">
+                        <div class="cat-tab-item active" id="cat-clothes-room" onclick="changeRoomCategory('clothes')">衣装</div>
+                        <div class="cat-tab-item" id="cat-acc-room" onclick="changeRoomCategory('acc')">アクセサリー</div>
+                        <div class="cat-tab-item" id="cat-bg-room" onclick="changeRoomCategory('bg')">背景</div>
                     </div>
                     
                     <!-- 衣装用サブカテゴリタブ -->
-                    <div class="sub-tabs-wrapper" id="room-sub-tabs" style="display: flex;">
-                        <div class="sub-tab-item active" id="tab-setup-room" onclick="changeRoomTab('setup')">セットアップ</div>
-                        <div class="sub-tab-item" id="tab-tops-room" onclick="changeRoomTab('tops')">トップス</div>
-                        <div class="sub-tab-item" id="tab-bottoms-room" onclick="changeRoomTab('bottoms')">ボトムス</div>
+                    <div class="sub-cat-tabs-wrapper" id="room-sub-tabs" style="display: flex;">
+                        <div class="sub-cat-tab-item active" id="tab-setup-room" onclick="changeRoomTab('setup')">セットアップ</div>
+                        <div class="sub-cat-tab-item" id="tab-tops-room" onclick="changeRoomTab('tops')">トップス</div>
+                        <div class="sub-cat-tab-item" id="tab-bottoms-room" onclick="changeRoomTab('bottoms')">ボトムス</div>
                     </div>
 
                     <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます</p>
@@ -665,18 +677,18 @@
                     </div>
                 </div>
 
-                <!-- ショップカテゴリタブ (ふせん風) -->
-                <div class="tabs-wrapper" id="shop-category-tabs">
-                    <div class="tab-item active" id="cat-clothes-shop" onclick="changeShopCategory('clothes')">衣装</div>
-                    <div class="tab-item" id="cat-acc-shop" onclick="changeShopCategory('acc')">アクセサリー</div>
-                    <div class="tab-item" id="cat-bg-shop" onclick="changeShopCategory('bg')">背景</div>
+                <!-- ショップカテゴリタブ (カプセル型) -->
+                <div class="cat-tabs-wrapper" id="shop-category-tabs">
+                    <div class="cat-tab-item active" id="cat-clothes-shop" onclick="changeShopCategory('clothes')">衣装</div>
+                    <div class="cat-tab-item" id="cat-acc-shop" onclick="changeShopCategory('acc')">アクセサリー</div>
+                    <div class="cat-tab-item" id="cat-bg-shop" onclick="changeShopCategory('bg')">背景</div>
                 </div>
                 
                 <!-- 衣装用サブカテゴリタブ -->
-                <div class="sub-tabs-wrapper" id="shop-sub-tabs" style="display: flex;">
-                    <div class="sub-tab-item active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</div>
-                    <div class="sub-tab-item" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</div>
-                    <div class="sub-tab-item" id="tab-bottoms-shop" onclick="changeShopTab('bottoms')">ボトムス</div>
+                <div class="sub-cat-tabs-wrapper" id="shop-sub-tabs" style="display: flex;">
+                    <div class="sub-cat-tab-item active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</div>
+                    <div class="sub-cat-tab-item" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</div>
+                    <div class="sub-cat-tab-item" id="tab-bottoms-shop" onclick="changeShopTab('bottoms')">ボトムス</div>
                 </div>
 
                 <div class="shop-area" id="preview-section" style="padding-top: 5px;">
@@ -704,16 +716,42 @@
 
             <!-- データ画面の要素 (設定・バックアップ) -->
             <div id="section-data">
-                <div style="padding: 20px; background: #f9f9f9; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;">
                     <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ / バックアップ</h3>
+                    
+                    <div style="font-size: 13px; line-height: 1.6; margin-bottom: 20px; color: #555;">
+                        <strong>【データの取り扱いについて】</strong><br>
+                        当アプリのセーブデータは、お使いのブラウザのローカルストレージ（端末内）にのみ保存され、外部サーバ等への送信は一切行われません。<br>
+                        ブラウザの履歴やキャッシュを削除した場合、またはシークレットモードを利用した場合はデータが消去されてしまうため、定期的な「データ出力」によるバックアップをおすすめします。
+                    </div>
+
                     <div style="display: flex; gap: 10px;">
                         <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: #7f8c8d;">データ出力(コピー)</button>
                         <button onclick="importData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--primary);">データ読込</button>
                     </div>
-                    <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 80px; margin-top: 15px; padding: 10px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 8px; resize: none;"></textarea>
+                    <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 80px; margin-top: 15px; padding: 10px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; resize: none;"></textarea>
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- カスタムアラートモーダル -->
+<div id="custom-alert-modal" class="custom-modal">
+    <div class="custom-modal-content">
+        <p id="custom-alert-message"></p>
+        <button id="custom-alert-ok" style="background-color: var(--primary);">OK</button>
+    </div>
+</div>
+
+<!-- カスタムコンファームモーダル -->
+<div id="custom-confirm-modal" class="custom-modal">
+    <div class="custom-modal-content">
+        <p id="custom-confirm-message"></p>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+            <button id="custom-confirm-yes" style="background-color: var(--accent); flex: 1;">はい</button>
+            <button onclick="hideCustomConfirm()" style="background-color: #7f8c8d; flex: 1;">いいえ</button>
         </div>
     </div>
 </div>
@@ -725,6 +763,31 @@
     }
     function hideInfo() {
         document.getElementById('info-modal').style.display = 'none';
+    }
+
+    // --- カスタムポップアップ制御 ---
+    function showCustomAlert(msg, onClose) {
+        document.getElementById('custom-alert-message').innerText = msg;
+        const okBtn = document.getElementById('custom-alert-ok');
+        okBtn.onclick = () => {
+            document.getElementById('custom-alert-modal').style.display = 'none';
+            if(onClose) onClose();
+        };
+        document.getElementById('custom-alert-modal').style.display = 'flex';
+    }
+
+    function showCustomConfirm(msg, onConfirm) {
+        document.getElementById('custom-confirm-message').innerText = msg;
+        const yesBtn = document.getElementById('custom-confirm-yes');
+        yesBtn.onclick = () => {
+            hideCustomConfirm();
+            onConfirm();
+        };
+        document.getElementById('custom-confirm-modal').style.display = 'flex';
+    }
+
+    function hideCustomConfirm() {
+        document.getElementById('custom-confirm-modal').style.display = 'none';
     }
 
     // --- データベース管理 ---
@@ -741,8 +804,30 @@
             { id: 'clothes9', name: 'ドレス', file: 'clothes_9.png', type: 'setup' },
             { id: 'clothes10', name: '部屋着', file: 'clothes_10.png', type: 'setup' }
         ],
-        tops: [],
-        bottoms: [],
+        tops: [
+            { id: 'tops1', name: 'トップス1', file: 'tops_1.png', type: 'tops' },
+            { id: 'tops2', name: 'トップス2', file: 'tops_2.png', type: 'tops' },
+            { id: 'tops3', name: 'トップス3', file: 'tops_3.png', type: 'tops' },
+            { id: 'tops4', name: 'トップス4', file: 'tops_4.png', type: 'tops' },
+            { id: 'tops5', name: 'トップス5', file: 'tops_5.png', type: 'tops' },
+            { id: 'tops6', name: 'トップス6', file: 'tops_6.png', type: 'tops' },
+            { id: 'tops7', name: 'トップス7', file: 'tops_7.png', type: 'tops' },
+            { id: 'tops8', name: 'トップス8', file: 'tops_8.png', type: 'tops' },
+            { id: 'tops9', name: 'トップス9', file: 'tops_9.png', type: 'tops' },
+            { id: 'tops10', name: 'トップス10', file: 'tops_10.png', type: 'tops' }
+        ],
+        bottoms: [
+            { id: 'bottoms1', name: 'ボトムス1', file: 'bottoms_1.png', type: 'bottoms' },
+            { id: 'bottoms2', name: 'ボトムス2', file: 'bottoms_2.png', type: 'bottoms' },
+            { id: 'bottoms3', name: 'ボトムス3', file: 'bottoms_3.png', type: 'bottoms' },
+            { id: 'bottoms4', name: 'ボトムス4', file: 'bottoms_4.png', type: 'bottoms' },
+            { id: 'bottoms5', name: 'ボトムス5', file: 'bottoms_5.png', type: 'bottoms' },
+            { id: 'bottoms6', name: 'ボトムス6', file: 'bottoms_6.png', type: 'bottoms' },
+            { id: 'bottoms7', name: 'ボトムス7', file: 'bottoms_7.png', type: 'bottoms' },
+            { id: 'bottoms8', name: 'ボトムス8', file: 'bottoms_8.png', type: 'bottoms' },
+            { id: 'bottoms9', name: 'ボトムス9', file: 'bottoms_9.png', type: 'bottoms' },
+            { id: 'bottoms10', name: 'ボトムス10', file: 'bottoms_10.png', type: 'bottoms' }
+        ],
         acc: [
             { id: 'acc1', name: 'リボン', file: 'acc_1.png', type: 'acc' },
             { id: 'acc2', name: '花飾り', file: 'acc_2.png', type: 'acc' },
@@ -860,15 +945,15 @@
             // モダンなClipboard APIを優先的に使用
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(encoded);
-                alert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
+                showCustomAlert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
             } else {
                 // Clipboard APIが使えない環境へのフォールバック
                 textarea.select();
                 document.execCommand('copy');
-                alert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
+                showCustomAlert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
             }
         } catch (e) {
-            alert("コードの出力に失敗しました。表示されたコードを手動でコピーしてください。");
+            showCustomAlert("コードの出力に失敗しました。表示されたコードを手動でコピーしてください。");
         }
     }
 
@@ -876,24 +961,25 @@
         const textarea = document.getElementById('backup-code');
         const code = textarea.value.trim();
         if (!code) {
-            alert("バックアップコードを入力してください。");
+            showCustomAlert("バックアップコードを入力してください。");
             return;
         }
         try {
             const decoded = JSON.parse(decodeURIComponent(atob(code)));
             if (decoded.state && decoded.equip) {
-                if(confirm("現在のデータは上書きされます。本当によろしいですか？")) {
+                showCustomConfirm("現在のデータは上書きされます。本当によろしいですか？", () => {
                     state = decoded.state;
                     currentEquip = decoded.equip;
                     saveGame();
-                    alert("データを読み込みました！");
-                    location.reload();
-                }
+                    showCustomAlert("データを読み込みました！", () => {
+                        location.reload();
+                    });
+                });
             } else {
-                alert("無効なバックアップデータです。");
+                showCustomAlert("無効なバックアップデータです。");
             }
         } catch (e) {
-            alert("コードの読み込みに失敗しました。正しいコードか確認してください。");
+            showCustomAlert("コードの読み込みに失敗しました。正しいコードか確認してください。");
         }
     }
 
@@ -991,7 +1077,7 @@
     // --- ルーム側カテゴリ切り替え ---
     function changeRoomCategory(cat) {
         currentRoomCategory = cat;
-        document.querySelectorAll('#room-category-tabs .tab-item').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#room-category-tabs .cat-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`cat-${cat}-room`).classList.add('active');
         
         const subTabs = document.getElementById('room-sub-tabs');
@@ -1006,7 +1092,7 @@
 
     function changeRoomTab(tab) {
         currentRoomTab = tab;
-        document.querySelectorAll('#room-sub-tabs .sub-tab-item').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#room-sub-tabs .sub-cat-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tab}-room`).classList.add('active');
         renderRoomItems(tab);
     }
@@ -1014,7 +1100,7 @@
     // --- ショップ側カテゴリ切り替え ---
     function changeShopCategory(cat) {
         currentShopCategory = cat;
-        document.querySelectorAll('#shop-category-tabs .tab-item').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#shop-category-tabs .cat-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`cat-${cat}-shop`).classList.add('active');
         
         const subTabs = document.getElementById('shop-sub-tabs');
@@ -1029,7 +1115,7 @@
 
     function changeShopTab(tab) {
         currentShopTab = tab;
-        document.querySelectorAll('#shop-sub-tabs .sub-tab-item').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#shop-sub-tabs .sub-cat-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tab}-shop`).classList.add('active');
         renderShopItems(tab);
     }
