@@ -27,7 +27,7 @@
             justify-content: center;
         }
         
-        /* スタート画面のスタイル */
+        /* スタート画面 */
         #start-screen {
             position: fixed;
             top: 0;
@@ -89,7 +89,7 @@
         #info-content p { font-size: 14px; line-height: 1.6; margin-top: 10px; color: #555; }
         .close-btn { display: block; margin: 30px auto 0; }
 
-        /* カスタムモーダル (データ読込確認用) */
+        /* カスタムモーダル */
         .custom-modal {
             display: none;
             position: fixed;
@@ -128,8 +128,8 @@
             border-radius: 12px;
             border: 2px solid #cbd5e1;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-height: 90vh; /* ここで高さを制限 */
-            overflow: hidden; /* コンテナ自体はスクロールさせない */
+            max-height: 90vh; 
+            overflow: hidden; 
         }
         
         #content-wrapper {
@@ -164,21 +164,20 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            /* overflow-y: auto; を削除 */
             padding-right: 10px;
             padding-bottom: 0;
-            overflow: hidden; /* コンテナ内をスクロールさせない */
+            overflow: hidden; 
         }
 
-        /* アイテムリストのコンテナに高さを設定してスクロール可能にする */
+    
         #unlocked-list, #locked-list {
             flex: 1;
-            overflow-y: auto; /* 枠内だけスクロール */
-            max-height: 400px; /* ここでお好みの高さに調整してください */
+            overflow-y: auto; 
+            max-height: 400px; 
             padding-right: 5px;
         }
 
-        /* ----- ボタンデザイン (白くなる挙動を廃止し自然なフィードバックへ) ----- */
+        /* ----- ボタンデザイン----- */
         button {
             padding: 10px 20px;
             background-color: var(--primary);
@@ -205,7 +204,7 @@
             transform: none;
         }
 
-        /* ----- 大タブ (トップ / 着せ替え / データ) ----- */
+        /* ----- 大タブ ----- */
         #main-nav {
             display: flex;
             width: 100%;
@@ -233,7 +232,7 @@
             color: white;
         }
 
-        /* ----- 小タブ (クローゼット / ショップ) ----- */
+        /* ----- 小タブ----- */
         #sub-nav {
             display: none;
             width: 100%;
@@ -270,7 +269,7 @@
             box-shadow: none !important;
         }
 
-        /* ----- カテゴリタブ (横幅3分割に変更) ----- */
+        /* ----- カテゴリタブ ----- */
         .cat-tabs-wrapper {
             display: flex;
             width: 100%;
@@ -299,26 +298,26 @@
             color: var(--accent);
         }
 
-        /* ----- サブカテゴリ (横幅3分割に変更・衣装タブの吹き出し風に) ----- */
+        /* ----- サブカテゴリ ----- */
         .sub-cat-tabs-wrapper {
             display: none;
             width: 100%;
             gap: 8px;
             margin-bottom: 15px;
-            margin-top: -5px; /* 上のカテゴリタブに近づける */
+            margin-top: -5px; 
             padding: 8px;
-            background-color: var(--accent-light); /* 衣装タブアクティブ時と同色に */
-            border: 2px solid var(--accent); /* 衣装タブの枠線と揃える */
+            background-color: var(--accent-light);
+            border: 2px solid var(--accent); 
             border-radius: 8px;
             box-sizing: border-box;
             position: relative;
         }
-        /* 「衣装」タブから繋がっているように見せるための三角形（吹き出しのしっぽ） */
+       
         .sub-cat-tabs-wrapper::before {
             content: '';
             position: absolute;
             top: -10px;
-            left: 16.66%; /* 3分割タブの1つ目(衣装)の中央付近 */
+            left: 16.66%; 
             transform: translateX(-50%);
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
