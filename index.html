@@ -171,27 +171,79 @@
             transform: none;
         }
 
-        /* ----- 大タブナビゲーション ----- */
-        #main-nav {
+        /* ----- ふせん風タブデザイン (大タブ & カテゴリタブ) ----- */
+        .tabs-wrapper {
             display: flex;
-            gap: 10px;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 15px;
+            gap: 4px;
             flex-shrink: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
         }
-        .m-tab-btn {
-            flex: 1;
-            padding: 12px;
-            background: #ecf0f1;
-            border: 1px solid #bdc3c7;
+        .tabs-wrapper::-webkit-scrollbar { display: none; /* Chrome, Safari */ }
+        
+        .tab-item {
+            padding: 10px 15px;
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
             color: var(--secondary);
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: -2px; /* 下線に被せる */
+            transition: background-color 0.2s, color 0.2s;
+            white-space: nowrap;
         }
-        .m-tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+        .tab-item:hover {
+            background-color: #e0e6ed;
+        }
+        .tab-item.active {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-bottom: 2px solid white; /* 下の線を隠す */
         }
 
-        /* ----- 小タブナビゲーション (着せ替え内) ----- */
+        /* ----- 衣装用のさらに小さなタブ (サブカテゴリ) ----- */
+        .sub-tabs-wrapper {
+            display: none; /* デフォルト非表示、JSで制御 */
+            border-bottom: 1px solid var(--primary);
+            margin-top: -10px;
+            margin-bottom: 15px;
+            gap: 4px;
+            padding-left: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .sub-tabs-wrapper::-webkit-scrollbar { display: none; }
+        
+        .sub-tab-item {
+            padding: 6px 12px;
+            background-color: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            color: var(--secondary);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: -1px;
+            transition: background-color 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+        .sub-tab-item.active {
+            background-color: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-bottom: 1px solid white;
+        }
+
+        /* ----- 小タブナビゲーション (着せ替え内 ルーム/ショップ) ----- */
         #sub-nav {
             display: none;
             gap: 10px;
@@ -388,31 +440,6 @@
         }
         .preview-info { flex: 1; }
         .preview-info p { margin: 5px 0 15px 0; font-size: 14px; }
-        
-        /* ショップ内タブ切り替えデザイン */
-        .tab-container {
-            display: flex;
-            gap: 5px;
-            padding-bottom: 5px;
-        }
-        .tab-btn {
-            background-color: #ecf0f1;
-            color: var(--secondary);
-            border: 1px solid #bdc3c7;
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 8px;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.05);
-        }
-        .tab-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 0 0 rgba(0,0,0,0.05);
-        }
-        .tab-btn.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
 
         /* ----- スマホ専用レイアウト ----- */
         @media (max-width: 768px) {
@@ -503,7 +530,7 @@
             <img src="avatar.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
         
-        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: #95a5a6;">はじめに読んでね</button><br>
+        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: var(--accent);">はじめに読んでね</button><br>
         <button onclick="startGame()" style="width: 260px; font-size: 18px; padding: 12px 0; background-color: var(--primary);">ゲームスタート</button>
     </div>
 
@@ -545,11 +572,11 @@
 
 <div id="game-container" class="mode-top">
     
-    <!-- 大タブ（常に一番上に表示） -->
-    <div id="main-nav">
-        <button class="m-tab-btn active" onclick="switchMainTab('top')">トップ</button>
-        <button class="m-tab-btn" onclick="switchMainTab('dressup')">着せ替え</button>
-        <button class="m-tab-btn" onclick="switchMainTab('data')">データ</button>
+    <!-- 大タブ（ふせん風） -->
+    <div id="main-nav" class="tabs-wrapper">
+        <div class="tab-item active" onclick="switchMainTab('top')">トップ</div>
+        <div class="tab-item" onclick="switchMainTab('dressup')">着せ替え</div>
+        <div class="tab-item" onclick="switchMainTab('data')">データ</div>
     </div>
 
     <div id="content-wrapper">
@@ -608,13 +635,21 @@
             <div id="section-room">
                 <div class="shop-area" style="padding-top: 5px; margin-top: 0;">
                     <h3>クローゼット</h3>
-                    <div class="tab-container" style="margin-bottom: 10px; overflow-x: auto;">
-                        <button class="tab-btn active" id="tab-setup-room" onclick="changeRoomTab('setup')">セットアップ</button>
-                        <button class="tab-btn" id="tab-tops-room" onclick="changeRoomTab('tops')">トップス</button>
-                        <button class="tab-btn" id="tab-bottoms-room" onclick="changeRoomTab('bottoms')">ボトムス</button>
-                        <button class="tab-btn" id="tab-acc-room" onclick="changeRoomTab('acc')">アクセ</button>
-                        <button class="tab-btn" id="tab-bg-room" onclick="changeRoomTab('bg')">背景</button>
+                    
+                    <!-- ルームカテゴリタブ (ふせん風) -->
+                    <div class="tabs-wrapper" id="room-category-tabs">
+                        <div class="tab-item active" id="cat-clothes-room" onclick="changeRoomCategory('clothes')">衣装</div>
+                        <div class="tab-item" id="cat-acc-room" onclick="changeRoomCategory('acc')">アクセサリー</div>
+                        <div class="tab-item" id="cat-bg-room" onclick="changeRoomCategory('bg')">背景</div>
                     </div>
+                    
+                    <!-- 衣装用サブカテゴリタブ -->
+                    <div class="sub-tabs-wrapper" id="room-sub-tabs" style="display: flex;">
+                        <div class="sub-tab-item active" id="tab-setup-room" onclick="changeRoomTab('setup')">セットアップ</div>
+                        <div class="sub-tab-item" id="tab-tops-room" onclick="changeRoomTab('tops')">トップス</div>
+                        <div class="sub-tab-item" id="tab-bottoms-room" onclick="changeRoomTab('bottoms')">ボトムス</div>
+                    </div>
+
                     <p style="font-size: 12px; color: #666; margin-top:-5px;">※着用中のアイテムを再度押すと外せます</p>
                     <div id="unlocked-list"></div>
                 </div>
@@ -630,13 +665,18 @@
                     </div>
                 </div>
 
-                <!-- ショップ内カテゴリタブ -->
-                <div class="tab-container" style="overflow-x: auto;">
-                    <button class="tab-btn active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</button>
-                    <button class="tab-btn" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</button>
-                    <button class="tab-btn" id="tab-bottoms-shop" onclick="changeShopTab('bottoms')">ボトムス</button>
-                    <button class="tab-btn" id="tab-acc-shop" onclick="changeShopTab('acc')">アクセ</button>
-                    <button class="tab-btn" id="tab-bg-shop" onclick="changeShopTab('bg')">背景</button>
+                <!-- ショップカテゴリタブ (ふせん風) -->
+                <div class="tabs-wrapper" id="shop-category-tabs">
+                    <div class="tab-item active" id="cat-clothes-shop" onclick="changeShopCategory('clothes')">衣装</div>
+                    <div class="tab-item" id="cat-acc-shop" onclick="changeShopCategory('acc')">アクセサリー</div>
+                    <div class="tab-item" id="cat-bg-shop" onclick="changeShopCategory('bg')">背景</div>
+                </div>
+                
+                <!-- 衣装用サブカテゴリタブ -->
+                <div class="sub-tabs-wrapper" id="shop-sub-tabs" style="display: flex;">
+                    <div class="sub-tab-item active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</div>
+                    <div class="sub-tab-item" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</div>
+                    <div class="sub-tab-item" id="tab-bottoms-shop" onclick="changeShopTab('bottoms')">ボトムス</div>
                 </div>
 
                 <div class="shop-area" id="preview-section" style="padding-top: 5px;">
@@ -749,8 +789,11 @@
     let currentMode = 'top'; 
     let currentSubTab = 'room';
     
-    let currentRoomTab = 'setup'; // ルーム内のカテゴリ
-    let currentShopTab = 'setup'; // ショップ内のカテゴリ
+    let currentRoomCategory = 'clothes'; // clothes, acc, bg
+    let currentRoomTab = 'setup'; // setup, tops, bottoms
+    
+    let currentShopCategory = 'clothes';
+    let currentShopTab = 'setup';
 
     const COOLDOWN_MS = 60 * 60 * 10; // テスト用
     let previewTarget = null;
@@ -807,17 +850,25 @@
     }
 
     // --- データ引継ぎ（エクスポート / インポート） ---
-    function exportData() {
+    async function exportData() {
         try {
             const data = { state: state, equip: currentEquip };
             const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
             const textarea = document.getElementById('backup-code');
             textarea.value = encoded;
-            textarea.select();
-            document.execCommand('copy');
-            alert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
+            
+            // モダンなClipboard APIを優先的に使用
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(encoded);
+                alert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
+            } else {
+                // Clipboard APIが使えない環境へのフォールバック
+                textarea.select();
+                document.execCommand('copy');
+                alert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
+            }
         } catch (e) {
-            alert("コードの出力に失敗しました。");
+            alert("コードの出力に失敗しました。表示されたコードを手動でコピーしてください。");
         }
     }
 
@@ -889,7 +940,7 @@
         currentMode = mode;
         const gc = document.getElementById('game-container');
         const uiArea = document.getElementById('ui-area');
-        const btns = document.querySelectorAll('#main-nav .m-tab-btn');
+        const btns = document.querySelectorAll('#main-nav .tab-item');
         
         btns.forEach(btn => btn.classList.remove('active'));
         
@@ -938,26 +989,59 @@
     }
 
     // --- ルーム側カテゴリ切り替え ---
+    function changeRoomCategory(cat) {
+        currentRoomCategory = cat;
+        document.querySelectorAll('#room-category-tabs .tab-item').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`cat-${cat}-room`).classList.add('active');
+        
+        const subTabs = document.getElementById('room-sub-tabs');
+        if (cat === 'clothes') {
+            subTabs.style.display = 'flex';
+            renderRoomItems(currentRoomTab);
+        } else {
+            subTabs.style.display = 'none';
+            renderRoomItems(cat);
+        }
+    }
+
     function changeRoomTab(tab) {
         currentRoomTab = tab;
-        document.querySelectorAll('#section-room .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#room-sub-tabs .sub-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tab}-room`).classList.add('active');
-        renderRoomItems();
+        renderRoomItems(tab);
     }
 
     // --- ショップ側カテゴリ切り替え ---
+    function changeShopCategory(cat) {
+        currentShopCategory = cat;
+        document.querySelectorAll('#shop-category-tabs .tab-item').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`cat-${cat}-shop`).classList.add('active');
+        
+        const subTabs = document.getElementById('shop-sub-tabs');
+        if (cat === 'clothes') {
+            subTabs.style.display = 'flex';
+            renderShopItems(currentShopTab);
+        } else {
+            subTabs.style.display = 'none';
+            renderShopItems(cat);
+        }
+    }
+
     function changeShopTab(tab) {
         currentShopTab = tab;
-        document.querySelectorAll('#section-shop .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#shop-sub-tabs .sub-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tab}-shop`).classList.add('active');
-        renderShopItems();
+        renderShopItems(tab);
     }
 
     // --- クローゼット(ルーム画面)の描画 ---
-    function renderRoomItems() {
+    function renderRoomItems(targetCategory) {
+        if (!targetCategory) {
+            targetCategory = currentRoomCategory === 'clothes' ? currentRoomTab : currentRoomCategory;
+        }
         const unlockedContainer = document.getElementById('unlocked-list');
         unlockedContainer.innerHTML = '';
-        const category = currentRoomTab;
+        const category = targetCategory;
         
         const catUnlocked = document.createElement('div');
         catUnlocked.className = 'shop-category';
@@ -1002,10 +1086,13 @@
     }
 
     // --- 未解放リスト(ショップ画面)の描画 ---
-    function renderShopItems() {
+    function renderShopItems(targetCategory) {
+        if (!targetCategory) {
+            targetCategory = currentShopCategory === 'clothes' ? currentShopTab : currentShopCategory;
+        }
         const lockedContainer = document.getElementById('locked-list');
         lockedContainer.innerHTML = '';
-        const category = currentShopTab;
+        const category = targetCategory;
         
         const catLocked = document.createElement('div');
         catLocked.className = 'shop-category';
