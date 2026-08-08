@@ -10,10 +10,10 @@
 
     <style>
         :root {
-            /* 全体カラーの差し戻し */
             --primary: #2c3e50;
             --secondary: #34495e;
             --accent: #3498db;
+            --accent-light: #ebf5fb;
             --bg: #ecf0f1;
             --text: #333;
         }
@@ -27,7 +27,7 @@
             justify-content: center;
         }
         
-        /* スタート画面のスタイル追加 */
+        /* スタート画面のスタイル */
         #start-screen {
             position: fixed;
             top: 0;
@@ -44,20 +44,20 @@
         #start-box {
             background: white;
             padding: 40px;
-            border-radius: 8px; /* フラット化に伴い角丸を縮小 */
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             width: 90%;
             max-width: 500px;
         }
         #logo-img {
             max-width: 100%;
-            max-height: 180px;
+            max-height: 160px;
             margin-bottom: 20px;
             object-fit: contain;
         }
 
-        /* はじめに読んでね モーダルのスタイル追加 */
+        /* はじめに読んでね モーダル */
         #info-modal {
             display: none;
             position: fixed;
@@ -70,7 +70,7 @@
         #info-content {
             background: white;
             padding: 30px;
-            border-radius: 8px;
+            border-radius: 12px;
             max-width: 500px;
             width: 85%;
             max-height: 80vh;
@@ -82,14 +82,14 @@
             color: var(--primary);
             font-size: 18px;
             margin-top: 25px;
-            border-bottom: 2px solid var(--primary);
+            border-bottom: 2px solid var(--accent);
             padding-bottom: 5px;
         }
         #info-content h2:first-child { margin-top: 0; }
         #info-content p { font-size: 14px; line-height: 1.6; margin-top: 10px; color: #555; }
         .close-btn { display: block; margin: 30px auto 0; }
 
-        /* カスタムモーダル (アラート/コンファーム用) */
+        /* カスタムモーダル (データ読込確認用) */
         .custom-modal {
             display: none;
             position: fixed;
@@ -102,7 +102,7 @@
         .custom-modal-content {
             background: white;
             padding: 25px 30px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-align: center;
             max-width: 400px;
             width: 80%;
@@ -116,10 +116,6 @@
             white-space: pre-wrap;
             margin-top: 0;
         }
-        .custom-modal-content button {
-            padding: 10px 30px;
-            font-size: 14px;
-        }
 
         /* ----- 画面の基本骨格 ----- */
         #game-container {
@@ -129,30 +125,28 @@
             width: 950px;
             background: white;
             padding: 20px;
-            border-radius: 8px; /* フラット化 */
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-radius: 12px;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             max-height: 90vh;
         }
         
-        /* アバターとUIを横並びにするためのラッパー */
         #content-wrapper {
             display: flex;
             gap: 20px;
             flex: 1;
-            overflow: hidden; /* PCではこれで右側がスクロール */
+            overflow: hidden;
         }
 
-        /* アバターエリア (左側) - クリーン化 */
+        /* アバターエリア (左側) */
         #avatar-area {
             position: relative;
             width: 360px;
             height: 480px;
-            border: 1px solid #e0e0e0; /* 影から枠線へ変更 */
-            border-radius: 8px;
+            border: 2px solid #94a3b8;
+            border-radius: 10px;
             background-color: #fff;
             flex-shrink: 0;
-            transition: max-width 0.3s, height 0.3s;
         }
         .avatar-layer {
             position: absolute;
@@ -164,7 +158,6 @@
             pointer-events: none;
         }
         
-        /* メインUIエリア (右側) */
         #ui-area {
             flex: 1;
             display: flex;
@@ -175,85 +168,89 @@
             padding-bottom: 50px;
         }
 
-        /* ----- 共通ボタンデザイン (フラット化) ----- */
+        /* ----- ボタンデザイン (白くなる挙動を廃止し自然なフィードバックへ) ----- */
         button {
             padding: 10px 20px;
             background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.1s ease;
         }
         button:hover:not(:disabled) {
-            filter: brightness(1.1);
+            background-color: #34495e;
         }
         button:active:not(:disabled) {
-            filter: brightness(0.9);
+            transform: scale(0.97);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         button:disabled {
-            background-color: #bdc3c7;
+            background-color: #94a3b8;
             cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
-        /* ----- 階層1: 大タブ (画面幅3分割) ----- */
+        /* ----- 大タブ (トップ / 着せ替え / データ) ----- */
         #main-nav {
             display: flex;
             width: 100%;
-            border-bottom: 2px solid var(--primary);
+            border-bottom: 3px solid var(--accent);
             margin-bottom: 15px;
-            padding: 0;
-            gap: 0;
+            gap: 5px;
         }
         .tab-item {
             flex: 1;
             text-align: center;
             padding: 12px 0;
-            background-color: #ecf0f1;
+            background-color: #e2e8f0;
             color: var(--secondary);
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
+            border-radius: 8px 8px 0 0;
             transition: background-color 0.2s, color 0.2s;
         }
         .tab-item:hover {
-            background-color: #e0e6ed;
+            background-color: #cbd5e1;
         }
         .tab-item.active {
-            background-color: var(--primary);
+            background-color: var(--accent);
             color: white;
         }
 
-        /* ----- 階層2: 中タブ (着せ替え内 ルーム/ショップ・画面幅2分割) ----- */
+        /* ----- 小タブ (ルーム / ショップ) ----- */
         #sub-nav {
             display: none;
             width: 100%;
             margin-bottom: 15px;
-            border-bottom: 1px solid #bdc3c7;
-            gap: 0;
+            border-bottom: 2px solid var(--accent);
+            gap: 5px;
         }
         .sub-tab-btn {
             flex: 1;
             text-align: center;
             padding: 10px 0;
-            background: transparent;
-            color: #7f8c8d;
+            background: #e2e8f0;
+            color: var(--secondary);
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 0;
+            border-radius: 6px 6px 0 0;
+            box-shadow: none;
         }
         .sub-tab-btn:hover {
-            color: var(--secondary);
+            background: #cbd5e1;
         }
         .sub-tab-btn.active {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            background: transparent;
+            background: var(--accent);
+            color: white;
         }
 
-        /* ----- 階層3: カテゴリタブ (カプセル型) ----- */
+        /* ----- カテゴリタブ (カプセル型) ----- */
         .cat-tabs-wrapper {
             display: flex;
             gap: 8px;
@@ -264,23 +261,26 @@
         .cat-tabs-wrapper::-webkit-scrollbar { display: none; }
         .cat-tab-item {
             padding: 6px 16px;
-            background-color: #f1f2f6;
-            color: #7f8c8d;
+            background-color: #e2e8f0;
+            color: var(--secondary);
             font-size: 13px;
             font-weight: bold;
             border-radius: 20px;
             cursor: pointer;
-            border: 1px solid transparent;
+            border: 2px solid transparent;
             white-space: nowrap;
             transition: 0.2s;
         }
+        .cat-tab-item:hover {
+            background-color: #cbd5e1;
+        }
         .cat-tab-item.active {
-            background-color: #fff;
-            border: 1px solid var(--primary);
-            color: var(--primary);
+            background-color: var(--accent-light);
+            border: 2px solid var(--accent);
+            color: var(--accent);
         }
 
-        /* ----- 階層4: サブカテゴリ (テキスト＋細い下線) ----- */
+        /* ----- サブカテゴリ ----- */
         .sub-cat-tabs-wrapper {
             display: none;
             gap: 15px;
@@ -291,8 +291,8 @@
         }
         .sub-cat-tabs-wrapper::-webkit-scrollbar { display: none; }
         .sub-cat-tab-item {
-            font-size: 12px;
-            color: #95a5a6;
+            font-size: 13px;
+            color: #64748b;
             cursor: pointer;
             font-weight: bold;
             padding-bottom: 4px;
@@ -301,8 +301,8 @@
             transition: 0.2s;
         }
         .sub-cat-tab-item.active {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
         }
 
         /* ----- 各セクションの表示制御 ----- */
@@ -336,15 +336,14 @@
             display: none;
         }
 
-        /* フラットデザイン向けコンテナの調整 */
         #lancelot-area {
             display: flex;
             gap: 10px;
-            background: #f8fbfc;
+            background: #eef2f7;
             padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            border-left: 5px solid var(--primary);
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--accent);
             flex-shrink: 0;
         }
         #lancelot-img {
@@ -372,9 +371,9 @@
         }
         .status-card {
             flex: 1;
-            background: #fcfcfc;
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
             padding: 10px;
             text-align: center;
             font-weight: bold;
@@ -385,7 +384,7 @@
             justify-content: center;
             gap: 5px;
         }
-        .status-card .label { font-size: 12px; color: #666; }
+        .status-card .label { font-size: 12px; color: #64748b; }
         .status-card .val { font-size: 16px; color: var(--primary); }
 
         .input-group {
@@ -397,49 +396,56 @@
         input[type="number"] {
             padding: 12px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
             flex: 1;
         }
         #cooldown-text { color: #e74c3c; font-size: 14px; font-weight: bold; }
         
-        /* ショップ・クローゼットUI */
         .shop-area {
             border-top: none; 
         }
         .shop-category {
             margin-bottom: 15px;
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
         }
         h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
         h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
         
-        /* アイテムボタン (見やすくフラットに調整) */
+        /* 視認性を高めたアイテムボタンと装備中ボタン */
         .item-btn, .equip-btn {
             margin: 4px;
             font-size: 13px;
             padding: 8px 12px;
-            border-radius: 4px;
+            border-radius: 6px;
+            border: 1px solid #94a3b8;
+            background-color: #ffffff;
+            color: var(--secondary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .item-btn { background-color: #f1f2f6; border: 1px solid #ced6e0; color: #57606f; }
-        .item-btn:hover:not(:disabled) { background-color: #dfe4ea; }
-        
-        .equip-btn { background-color: #f1f2f6; border: 1px solid var(--primary); color: var(--primary); }
-        .equip-btn:hover:not(:disabled) { background-color: #e4e7ea; }
-        
-        .equip-btn.active-equip { background-color: var(--primary); border: 1px solid var(--primary); color: white; }
+        .item-btn:hover:not(:disabled), .equip-btn:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: var(--accent);
+        }
+        /* 装備中（アクティブ）は水色系統でくっきり強調 */
+        .equip-btn.active-equip {
+            background-color: var(--accent-light);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-weight: bold;
+        }
         
         /* プレビュー枠 */
         #preview-panel {
             display: flex;
             gap: 15px;
-            background: #f8fbfc;
+            background: #eef2f7;
             padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
             margin-bottom: 15px;
             align-items: center;
         }
@@ -447,11 +453,11 @@
             width: 100px;
             height: 120px;
             background: rgba(255, 255, 255, 0.7);
-            background-image: linear-gradient(45deg, #eee 25%, transparent 25%), linear-gradient(-45deg, #eee 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #eee 75%), linear-gradient(-45deg, transparent 75%, #eee 75%);
+            background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             border-radius: 6px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -462,7 +468,6 @@
         .preview-info { flex: 1; }
         .preview-info p { margin: 5px 0 15px 0; font-size: 14px; }
 
-        /* ----- スマホ専用レイアウト ----- */
         @media (max-width: 768px) {
             #game-container {
                 max-height: none;
@@ -492,14 +497,14 @@
                 max-width: 150px; 
                 height: 200px;    
                 margin: 0 auto;
-                border: 1px solid #ccc;
+                border: 2px solid #cbd5e1;
             }
 
             #game-container.mode-dressup #unlocked-list,
             #game-container.mode-dressup #locked-list {
                 max-height: 35vh; 
                 overflow-y: auto;
-                border-top: 1px dashed #bdc3c7;
+                border-top: 1px dashed #cbd5e1;
                 padding-top: 10px;
                 margin-top: 5px;
             }
@@ -522,7 +527,6 @@
             }
         }
 
-        /* 購入エフェクト用アニメーション */
         @keyframes purchaseEffect {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
@@ -532,9 +536,10 @@
 </head>
 <body>
 
-<!-- スタート画面 (ゲーム開始前に表示されます) -->
+<!-- スタート画面（ロゴを復活配置） -->
 <div id="start-screen">
     <div id="start-box">
+        <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
         <p style="line-height: 1.6; margin-bottom: 25px; font-size: 15px; color: #555;">
             古戦場の累計貢献度を報告してコインを獲得し、<br>
             アイテムを解放して自由に着せ替えを楽しもう！<br>
@@ -584,7 +589,7 @@
 
 <div id="game-container" class="mode-top">
     
-    <!-- 大タブ（フラット） -->
+    <!-- 大タブ -->
     <div id="main-nav">
         <div class="tab-item active" onclick="switchMainTab('top')">トップ</div>
         <div class="tab-item" onclick="switchMainTab('dressup')">着せ替え</div>
@@ -605,7 +610,7 @@
         <!-- メインUIエリア -->
         <div id="ui-area" class="show-top">
             
-            <!-- 小タブ (着せ替えモードの時に表示されます) -->
+            <!-- 小タブ -->
             <div id="sub-nav">
                 <button class="sub-tab-btn active" onclick="switchSubTab('room')">ルーム</button>
                 <button class="sub-tab-btn" onclick="switchSubTab('shop')">ショップ</button>
@@ -643,19 +648,17 @@
                 <div id="cooldown-text"></div>
             </div>
 
-            <!-- ルーム画面の要素 (着せ替え > ルーム) -->
+            <!-- ルーム画面の要素 -->
             <div id="section-room">
                 <div class="shop-area" style="padding-top: 5px; margin-top: 0;">
                     <h3>クローゼット</h3>
                     
-                    <!-- ルームカテゴリタブ (カプセル型) -->
                     <div class="cat-tabs-wrapper" id="room-category-tabs">
                         <div class="cat-tab-item active" id="cat-clothes-room" onclick="changeRoomCategory('clothes')">衣装</div>
                         <div class="cat-tab-item" id="cat-acc-room" onclick="changeRoomCategory('acc')">アクセサリー</div>
                         <div class="cat-tab-item" id="cat-bg-room" onclick="changeRoomCategory('bg')">背景</div>
                     </div>
                     
-                    <!-- 衣装用サブカテゴリタブ -->
                     <div class="sub-cat-tabs-wrapper" id="room-sub-tabs" style="display: flex;">
                         <div class="sub-cat-tab-item active" id="tab-setup-room" onclick="changeRoomTab('setup')">セットアップ</div>
                         <div class="sub-cat-tab-item" id="tab-tops-room" onclick="changeRoomTab('tops')">トップス</div>
@@ -667,7 +670,7 @@
                 </div>
             </div>
 
-            <!-- ショップ画面の要素 (着せ替え > ショップ) -->
+            <!-- ショップ画面の要素 -->
             <div id="section-shop">
                 
                 <div class="status-container" style="margin-bottom: 15px;">
@@ -677,14 +680,12 @@
                     </div>
                 </div>
 
-                <!-- ショップカテゴリタブ (カプセル型) -->
                 <div class="cat-tabs-wrapper" id="shop-category-tabs">
                     <div class="cat-tab-item active" id="cat-clothes-shop" onclick="changeShopCategory('clothes')">衣装</div>
                     <div class="cat-tab-item" id="cat-acc-shop" onclick="changeShopCategory('acc')">アクセサリー</div>
                     <div class="cat-tab-item" id="cat-bg-shop" onclick="changeShopCategory('bg')">背景</div>
                 </div>
                 
-                <!-- 衣装用サブカテゴリタブ -->
                 <div class="sub-cat-tabs-wrapper" id="shop-sub-tabs" style="display: flex;">
                     <div class="sub-cat-tab-item active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</div>
                     <div class="sub-cat-tab-item" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</div>
@@ -714,9 +715,9 @@
 
             </div>
 
-            <!-- データ画面の要素 (設定・バックアップ) -->
+            <!-- データ画面の要素 -->
             <div id="section-data">
-                <div style="padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;">
+                <div style="padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #cbd5e1;">
                     <h3 style="margin-top: 0; color: var(--primary);">データ引継ぎ / バックアップ</h3>
                     
                     <div style="font-size: 13px; line-height: 1.6; margin-bottom: 20px; color: #555;">
@@ -726,10 +727,10 @@
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: #7f8c8d;">データ出力(コピー)</button>
+                        <button onclick="exportData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: #64748b;">データ出力(コピー)</button>
                         <button onclick="importData()" style="padding: 12px; font-size: 14px; flex: 1; background-color: var(--primary);">データ読込</button>
                     </div>
-                    <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 80px; margin-top: 15px; padding: 10px; box-sizing: border-box; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; resize: none;"></textarea>
+                    <textarea id="backup-code" placeholder="出力されたコードがここに表示されます。復元時はコードを貼り付けて「データ読込」を押してください。" style="width: 100%; height: 80px; margin-top: 15px; padding: 10px; box-sizing: border-box; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
                 </div>
             </div>
 
@@ -741,7 +742,7 @@
 <div id="custom-alert-modal" class="custom-modal">
     <div class="custom-modal-content">
         <p id="custom-alert-message"></p>
-        <button id="custom-alert-ok" style="background-color: var(--primary);">OK</button>
+        <button onclick="hideCustomAlert()" style="background-color: var(--primary);">OK</button>
     </div>
 </div>
 
@@ -751,7 +752,7 @@
         <p id="custom-confirm-message"></p>
         <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
             <button id="custom-confirm-yes" style="background-color: var(--accent); flex: 1;">はい</button>
-            <button onclick="hideCustomConfirm()" style="background-color: #7f8c8d; flex: 1;">いいえ</button>
+            <button onclick="hideCustomConfirm()" style="background-color: #64748b; flex: 1;">いいえ</button>
         </div>
     </div>
 </div>
@@ -768,12 +769,15 @@
     // --- カスタムポップアップ制御 ---
     function showCustomAlert(msg, onClose) {
         document.getElementById('custom-alert-message').innerText = msg;
-        const okBtn = document.getElementById('custom-alert-ok');
-        okBtn.onclick = () => {
-            document.getElementById('custom-alert-modal').style.display = 'none';
-            if(onClose) onClose();
-        };
+        window._alertCallback = onClose;
         document.getElementById('custom-alert-modal').style.display = 'flex';
+    }
+    function hideCustomAlert() {
+        document.getElementById('custom-alert-modal').style.display = 'none';
+        if (window._alertCallback) {
+            window._alertCallback();
+            window._alertCallback = null;
+        }
     }
 
     function showCustomConfirm(msg, onConfirm) {
@@ -856,7 +860,6 @@
 
     const categoryNames = { setup: "セットアップ", tops: "トップス", bottoms: "ボトムス", acc: "アクセサリー", bg: "背景" };
     
-    // アクセサリーを複数持てるよう、初期値を配列([])に変更
     const defaultEquip = { setup: '', tops: '', bottoms: '', acc: [], bg: '' };
     let currentEquip = { setup: '', tops: '', bottoms: '', acc: [], bg: '' };
     
@@ -870,22 +873,20 @@
         unlocked: {}
     };
 
-    // タブ管理用の変数
     let currentMode = 'top'; 
     let currentSubTab = 'room';
     
-    let currentRoomCategory = 'clothes'; // clothes, acc, bg
-    let currentRoomTab = 'setup'; // setup, tops, bottoms
+    let currentRoomCategory = 'clothes';
+    let currentRoomTab = 'setup';
     
     let currentShopCategory = 'clothes';
     let currentShopTab = 'setup';
 
-    const COOLDOWN_MS = 60 * 60 * 10; // テスト用
+    const COOLDOWN_MS = 60 * 60 * 10;
     let previewTarget = null;
     let timerInterval = null;
     let typeWriterTimeout = null;
 
-    // --- ローカルストレージ（セーブ・ロード処理） ---
     const SAVE_KEY_STATE = 'kosenjo_save_state';
     const SAVE_KEY_EQUIP = 'kosenjo_save_equip';
 
@@ -907,13 +908,12 @@
                 }
                 state.version = 1;
             } catch (e) {
-                console.error("セーブデータの読み込みに失敗しました。初期状態から開始します。", e);
+                console.error("セーブデータの読み込みに失敗しました。", e);
             }
         }
         if (savedEquip) {
             try {
                 let loadedEquip = JSON.parse(savedEquip);
-                // 旧形式からの移行処理
                 if (loadedEquip.clothes) {
                     loadedEquip.setup = loadedEquip.clothes;
                     delete loadedEquip.clothes;
@@ -927,14 +927,13 @@
                 }
                 currentEquip = { ...defaultEquip, ...currentEquip, ...loadedEquip };
             } catch (e) {
-                console.error("装備データの読み込みに失敗しました。初期状態から開始します。", e);
+                console.error("装備データの読み込みに失敗しました。", e);
             }
         }
         
         ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
     }
 
-    // --- データ引継ぎ（エクスポート / インポート） ---
     async function exportData() {
         try {
             const data = { state: state, equip: currentEquip };
@@ -942,12 +941,10 @@
             const textarea = document.getElementById('backup-code');
             textarea.value = encoded;
             
-            // モダンなClipboard APIを優先的に使用
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(encoded);
                 showCustomAlert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
             } else {
-                // Clipboard APIが使えない環境へのフォールバック
                 textarea.select();
                 document.execCommand('copy');
                 showCustomAlert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
@@ -983,12 +980,10 @@
         }
     }
 
-    // --- セリフ集 ---
     const msgsProgress = [
         "お疲れさま。まずは順調な滑り出しだな。", "よし、いいペースだ。俺も負けていられないな。", "報告ありがとう。団長の采配にはいつも助けられている。", "着実に進んでいるな。この調子で頼む。", "疲れは出ていないか？適度な休憩も任務のうちだぞ。", "順調そのものだな。白竜騎士団も君に続こう。", "素晴らしい集中力だ。だが、無理だけはするなよ。", "君の頑張りは俺が一番よく分かっている。いつもありがとう。", "ふふ、君が指揮を執ると皆の士気も違う。頼もしいよ。", "少し休まないか？俺がとっておきの紅茶を淹れよう。", "よし、ひと区切りだな。お茶菓子も用意してあるぞ。", "君の隣にいると、俺も不思議と力が湧いてくるんだ。", "団長、いつもお疲れ様。たまには俺を頼ってくれていいんだぞ。", "君がいてくれるから、前へ進める。…ありがとう。", "今日は随分と頑張ったな。終わったら、甘いものでも食べに行かないか？", "凄まじい勢いだ。君の背中は、まるで誰かを導く光のようだな。", "素晴らしい。君の熱意にはいつも驚かされるばかりだ。", "これほどの戦果を挙げるとは。君は本当に誇り高き団長だ。", "君の努力には頭が下がる。どうか、その身を大切にしてくれ。", "君と共に戦えること、白竜騎士団長として誇りに思う。", "見事だ。だが、君が倒れたら皆が悲しむ。息抜きも忘れるなよ。", "まさかここまでやるとは…君の采配は神懸っているな。", "君の力になれるなら、俺はどこまででも付き合うぞ。", "鬼神の如き活躍だな。だが、少し休んで俺の淹れた茶を飲んでくれ。", "ここまで来れたのは君のおかげだ。最後まで、全力で支えよう。", "どんな困難な戦いも、君となら越えていける。そう確信している。", "君の隣は居心地がいい。…これからも、ずっと共に走らせてくれ。", "圧倒的だな。君の軌跡は、きっと後世に語り継がれるだろう。", "さあ、いよいよ大詰めだ。君の望む結末へ、共に駆け抜けよう！", "到達したな。君は最高の団長であり、俺の誇り高き戦友だ。本当にお疲れ様！"
     ];
 
-    // --- UI更新関連 ---
     function updateUI() {
         document.getElementById('val-total').innerText = state.totalScore.toLocaleString();
         document.getElementById('val-reports').innerText = state.reportCount;
@@ -1008,10 +1003,8 @@
         }
     }
 
-    // --- キャラクター画像更新 (親愛度による切り替え) ---
     function updateLancelotImage() {
         const img = document.getElementById('lancelot-img');
-        
         if (state.affection >= 100) {
             img.src = 'lancelot_3.png'; 
         } else if (state.affection >= 50) {
@@ -1021,7 +1014,6 @@
         }
     }
 
-    // --- 大タブ切り替え (トップ / 着せ替え / データ) ---
     function switchMainTab(mode) {
         currentMode = mode;
         const gc = document.getElementById('game-container');
@@ -1029,8 +1021,6 @@
         const btns = document.querySelectorAll('#main-nav .tab-item');
         
         btns.forEach(btn => btn.classList.remove('active'));
-        
-        // 全モードクラスを一度削除
         gc.classList.remove('mode-top', 'mode-dressup', 'mode-data');
         
         if (mode === 'top') {
@@ -1040,7 +1030,6 @@
         } else if (mode === 'dressup') {
             btns[1].classList.add('active');
             gc.classList.add('mode-dressup');
-            // 着せ替えモード時は、前回開いていた小タブ（ルームかショップ）を復元
             uiArea.className = `show-${currentSubTab}`;
         } else if (mode === 'data') {
             btns[2].classList.add('active');
@@ -1048,13 +1037,11 @@
             uiArea.className = 'show-data';
         }
         
-        // スマホでタブを切り替えたら一番上にスクロール
         if(window.innerWidth <= 768) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
-    // --- 小タブ切り替え (ルーム / ショップ) ---
     function switchSubTab(tab) {
         currentSubTab = tab;
         const uiArea = document.getElementById('ui-area');
@@ -1074,7 +1061,6 @@
         }
     }
 
-    // --- ルーム側カテゴリ切り替え ---
     function changeRoomCategory(cat) {
         currentRoomCategory = cat;
         document.querySelectorAll('#room-category-tabs .cat-tab-item').forEach(btn => btn.classList.remove('active'));
@@ -1097,7 +1083,6 @@
         renderRoomItems(tab);
     }
 
-    // --- ショップ側カテゴリ切り替え ---
     function changeShopCategory(cat) {
         currentShopCategory = cat;
         document.querySelectorAll('#shop-category-tabs .cat-tab-item').forEach(btn => btn.classList.remove('active'));
@@ -1120,7 +1105,6 @@
         renderShopItems(tab);
     }
 
-    // --- クローゼット(ルーム画面)の描画 ---
     function renderRoomItems(targetCategory) {
         if (!targetCategory) {
             targetCategory = currentRoomCategory === 'clothes' ? currentRoomTab : currentRoomCategory;
@@ -1171,7 +1155,6 @@
         unlockedContainer.appendChild(catUnlocked);
     }
 
-    // --- 未解放リスト(ショップ画面)の描画 ---
     function renderShopItems(targetCategory) {
         if (!targetCategory) {
             targetCategory = currentShopCategory === 'clothes' ? currentShopTab : currentShopCategory;
@@ -1197,13 +1180,11 @@
         if (hasLocked) lockedContainer.appendChild(catLocked);
     }
 
-    // --- 全アイテムリストの一括更新 ---
     function renderItems() {
         renderRoomItems();
         renderShopItems();
     }
 
-    // --- アバター画像の適用 ---
     function applyAvatarImage(type, file) {
         if (type === 'acc') {
             const avatarArea = document.getElementById('avatar-area');
@@ -1231,9 +1212,7 @@
         }
     }
 
-    // --- 装備のトグル（オンオフ）処理 ---
     function toggleEquip(type, file) {
-        // ロジック: セットアップ <-> トップス・ボトムスの排他処理
         if (type === 'setup') {
             currentEquip.setup = (currentEquip.setup === file && file !== '') ? '' : file;
             if (currentEquip.setup !== '') {
@@ -1257,7 +1236,6 @@
                 }
             }
         } else {
-            // 背景などはそのまま
             currentEquip[type] = (currentEquip[type] === file && file !== '') ? '' : file;
         }
         
@@ -1271,7 +1249,6 @@
         saveGame(); 
     }
 
-    // --- プレビュー機能 ---
     function showPreview(item) {
         previewTarget = item;
         const img = document.getElementById('preview-img');
@@ -1351,7 +1328,6 @@
         saveGame(); 
     }
 
-    // --- 貢献度報告 ---
     function reportScore() {
         const inputVal = parseInt(document.getElementById('input-score').value, 10);
         
@@ -1412,7 +1388,6 @@
         saveGame();
     }
 
-    // --- 貢献度修正 ---
     function fixScore() {
         const inputVal = parseInt(document.getElementById('input-score').value, 10);
         
@@ -1429,7 +1404,6 @@
         saveGame();
     }
 
-    // --- メッセージ（タイプライター演出） ---
     function setLancelotMessage(msg) {
         const box = document.getElementById('message-box');
         box.innerText = '';
@@ -1467,13 +1441,11 @@
         }, 1000);
     }
 
-    // --- ゲーム開始処理 ---
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
         setLancelotMessage("お疲れさま。今日も古戦場を走るんだな。\n報告を待っているぞ。");
     }
 
-    // --- 初期化 ---
     ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(cat => {
         if(ITEM_DB[cat]) {
             ITEM_DB[cat].forEach(item => {
@@ -1488,7 +1460,6 @@
     updateUI();
     renderItems();
     startCooldownTimer();
-    
 </script>
 
 </body>
