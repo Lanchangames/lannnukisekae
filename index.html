@@ -179,6 +179,7 @@
             font-weight: bold;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
         }
         button:hover:not(:disabled) {
             background-color: #34495e;
@@ -446,10 +447,15 @@
             background-color: #ffffff;
             color: var(--secondary);
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            -webkit-tap-highlight-color: transparent;
         }
         .item-btn:hover:not(:disabled), .equip-btn:hover:not(:disabled) {
             background-color: #f1f5f9;
             border-color: var(--accent);
+        }
+        .item-btn:active:not(:disabled), .equip-btn:active:not(:disabled) {
+            background-color: #ffffff;
+            transform: scale(0.97);
         }
         /* 装備中（アクティブ）は濃い青系統でくっきり強調 */
         .equip-btn.active-equip {
@@ -457,6 +463,10 @@
             border: 2px solid var(--primary);
             color: white;
             font-weight: bold;
+        }
+        .equip-btn.active-equip:active:not(:disabled) {
+            background-color: var(--primary);
+            transform: scale(0.97);
         }
         
         /* プレビュー枠 */
