@@ -222,7 +222,7 @@
             color: white;
         }
 
-        /* ----- 小タブ (ルーム / ショップ) ----- */
+        /* ----- 小タブ (クローゼット / ショップ) ----- */
         #sub-nav {
             display: none;
             width: 100%;
@@ -250,25 +250,24 @@
             color: white;
         }
 
-        /* ----- カテゴリタブ (カプセル型) ----- */
+        /* ----- カテゴリタブ (横幅3分割に変更) ----- */
         .cat-tabs-wrapper {
             display: flex;
-            gap: 8px;
+            width: 100%;
+            gap: 5px;
             margin-bottom: 15px;
-            overflow-x: auto;
-            scrollbar-width: none;
         }
-        .cat-tabs-wrapper::-webkit-scrollbar { display: none; }
         .cat-tab-item {
-            padding: 6px 16px;
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
             background-color: #e2e8f0;
             color: var(--secondary);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            border-radius: 20px;
+            border-radius: 6px;
             cursor: pointer;
             border: 2px solid transparent;
-            white-space: nowrap;
             transition: 0.2s;
         }
         .cat-tab-item:hover {
@@ -280,25 +279,26 @@
             color: var(--accent);
         }
 
-        /* ----- サブカテゴリ ----- */
+        /* ----- サブカテゴリ (横幅3分割に変更) ----- */
         .sub-cat-tabs-wrapper {
             display: none;
-            gap: 15px;
+            width: 100%;
+            gap: 5px;
             margin-bottom: 15px;
-            padding-left: 5px;
-            overflow-x: auto;
-            scrollbar-width: none;
         }
-        .sub-cat-tabs-wrapper::-webkit-scrollbar { display: none; }
         .sub-cat-tab-item {
+            flex: 1;
+            text-align: center;
             font-size: 13px;
             color: #64748b;
             cursor: pointer;
             font-weight: bold;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
             border-bottom: 2px solid transparent;
-            white-space: nowrap;
             transition: 0.2s;
+        }
+        .sub-cat-tab-item:hover {
+            color: var(--secondary);
         }
         .sub-cat-tab-item.active {
             color: var(--accent);
@@ -559,7 +559,7 @@
                 1. 現在の古戦場の累計貢献度を入力して「報告する」ボタンを押します。<br>
                 2. 報告を行うと、コインと親愛度が貯まります。<br>
                 3. 貯まったコインを使い、ショップ画面からアイテムを解放しましょう。<br>
-                4. 解放したアイテムは、ルーム画面のクローゼットから自由に着せ替え可能です。<br>
+                4. 解放したアイテムは、クローゼット画面から自由に着せ替え可能です。<br>
                 5. 貢献度を間違えてしまった場合は、「貢献度修正」ボタンで正しい数値に修正できます（コイン等は貯まりません）。
             </p>
 
@@ -612,7 +612,7 @@
             
             <!-- 小タブ -->
             <div id="sub-nav">
-                <button class="sub-tab-btn active" onclick="switchSubTab('room')">ルーム</button>
+                <button class="sub-tab-btn active" onclick="switchSubTab('room')">クローゼット</button>
                 <button class="sub-tab-btn" onclick="switchSubTab('shop')">ショップ</button>
             </div>
 
@@ -648,10 +648,9 @@
                 <div id="cooldown-text"></div>
             </div>
 
-            <!-- ルーム画面の要素 -->
+            <!-- クローゼット画面の要素 -->
             <div id="section-room">
                 <div class="shop-area" style="padding-top: 5px; margin-top: 0;">
-                    <h3>クローゼット</h3>
                     
                     <div class="cat-tabs-wrapper" id="room-category-tabs">
                         <div class="cat-tab-item active" id="cat-clothes-room" onclick="changeRoomCategory('clothes')">衣装</div>
