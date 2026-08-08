@@ -279,30 +279,51 @@
             color: var(--accent);
         }
 
-        /* ----- サブカテゴリ (横幅3分割に変更) ----- */
+        /* ----- サブカテゴリ (横幅3分割に変更・衣装タブの吹き出し風に) ----- */
         .sub-cat-tabs-wrapper {
             display: none;
             width: 100%;
-            gap: 5px;
+            gap: 8px;
             margin-bottom: 15px;
+            margin-top: -5px; /* 上のカテゴリタブに近づける */
+            padding: 8px;
+            background-color: var(--accent-light); /* 衣装タブアクティブ時と同色に */
+            border: 2px solid var(--accent); /* 衣装タブの枠線と揃える */
+            border-radius: 8px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        /* 「衣装」タブから繋がっているように見せるための三角形（吹き出しのしっぽ） */
+        .sub-cat-tabs-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 16.66%; /* 3分割タブの1つ目(衣装)の中央付近 */
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid var(--accent);
         }
         .sub-cat-tab-item {
             flex: 1;
             text-align: center;
             font-size: 13px;
-            color: #64748b;
+            color: var(--secondary);
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            padding-bottom: 6px;
-            border-bottom: 2px solid transparent;
+            padding: 8px 0;
             transition: 0.2s;
         }
         .sub-cat-tab-item:hover {
-            color: var(--secondary);
+            background-color: white;
+            color: var(--primary);
         }
         .sub-cat-tab-item.active {
-            color: var(--accent);
-            border-bottom: 2px solid var(--accent);
+            color: white;
+            background-color: var(--accent);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         /* ----- 各セクションの表示制御 ----- */
@@ -430,11 +451,11 @@
             background-color: #f1f5f9;
             border-color: var(--accent);
         }
-        /* 装備中（アクティブ）は水色系統でくっきり強調 */
+        /* 装備中（アクティブ）は濃い青系統でくっきり強調 */
         .equip-btn.active-equip {
-            background-color: var(--accent-light);
-            border: 2px solid var(--accent);
-            color: var(--accent);
+            background-color: var(--primary);
+            border: 2px solid var(--primary);
+            color: white;
             font-weight: bold;
         }
         
