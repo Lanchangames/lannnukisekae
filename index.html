@@ -862,13 +862,16 @@
     const defaultEquip = { setup: '', tops: '', bottoms: '', acc: [], bg: '' };
     let currentEquip = { setup: '', tops: '', bottoms: '', acc: [], bg: '' };
     
+    const SAVE_VERSION = 1;
+
     let state = {
-        version: 1, 
+        version: SAVE_VERSION, 
         totalScore: 0,
         reportCount: 0,
         coins: 0,
         affection: 0,
         lastReportTime: 0,
+        highestReportedScore: 0,
         unlocked: {}
     };
 
@@ -894,6 +897,38 @@
         localStorage.setItem(SAVE_KEY_EQUIP, JSON.stringify(currentEquip));
     }
 
+    function normalizeEquip(loadedEquip) {
+        let norm = { ...defaultEquip, ...loadedEquip };
+        if (loadedEquip.clothes) {
+            norm.setup = loadedEquip.clothes;
+            delete norm.clothes;
+        }
+        if (typeof norm.setup !== 'string') norm.setup = '';
+        if (typeof norm.tops !== 'string') norm.tops = '';
+        if (typeof norm.bottoms !== 'string') norm.bottoms = '';
+        if (typeof norm.bg !== 'string') norm.bg = '';
+        
+        if (typeof norm.acc === 'string') {
+            norm.acc = norm.acc === '' ? [] : [norm.acc];
+        } else if (!Array.isArray(norm.acc)) {
+            norm.acc = [];
+        } else {
+            norm.acc = norm.acc.filter(item => typeof item === 'string');
+        }
+        return norm;
+    }
+
+    function isValidState(s) {
+        if (!s || typeof s !== 'object') return false;
+        if (typeof s.totalScore !== 'number') return false;
+        if (typeof s.reportCount !== 'number') return false;
+        if (typeof s.coins !== 'number') return false;
+        if (typeof s.affection !== 'number') return false;
+        if (typeof s.lastReportTime !== 'number') return false;
+        if (!s.unlocked || typeof s.unlocked !== 'object') return false;
+        return true;
+    }
+
     function loadGame() {
         const savedState = localStorage.getItem(SAVE_KEY_STATE);
         const savedEquip = localStorage.getItem(SAVE_KEY_EQUIP);
@@ -905,7 +940,6 @@
                 if (parsedState.unlocked) {
                     state.unlocked = { ...state.unlocked, ...parsedState.unlocked };
                 }
-                state.version = 1;
             } catch (e) {
                 console.error("セーブデータの読み込みに失敗しました。", e);
             }
@@ -913,22 +947,16 @@
         if (savedEquip) {
             try {
                 let loadedEquip = JSON.parse(savedEquip);
-                if (loadedEquip.clothes) {
-                    loadedEquip.setup = loadedEquip.clothes;
-                    delete loadedEquip.clothes;
-                }
-                if (!loadedEquip.setup) loadedEquip.setup = '';
-                if (!loadedEquip.tops) loadedEquip.tops = '';
-                if (!loadedEquip.bottoms) loadedEquip.bottoms = '';
-                
-                if (typeof loadedEquip.acc === 'string') {
-                    loadedEquip.acc = loadedEquip.acc === '' ? [] : [loadedEquip.acc];
-                }
-                currentEquip = { ...defaultEquip, ...currentEquip, ...loadedEquip };
+                currentEquip = normalizeEquip(loadedEquip);
             } catch (e) {
                 console.error("装備データの読み込みに失敗しました。", e);
             }
         }
+
+        if (state.highestReportedScore === undefined) {
+            state.highestReportedScore = state.totalScore;
+        }
+        state.version = SAVE_VERSION;
         
         ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(type => applyAvatarImage(type, currentEquip[type]));
     }
@@ -962,10 +990,19 @@
         }
         try {
             const decoded = JSON.parse(decodeURIComponent(atob(code)));
-            if (decoded.state && decoded.equip) {
+            if (isValidState(decoded.state) && decoded.equip && typeof decoded.equip === 'object') {
                 showCustomConfirm("現在のデータは上書きされます。本当によろしいですか？", () => {
-                    state = decoded.state;
-                    currentEquip = decoded.equip;
+                    state = { ...state, ...decoded.state };
+                    if (decoded.state.unlocked) {
+                        state.unlocked = { ...state.unlocked, ...decoded.state.unlocked };
+                    }
+                    if (state.highestReportedScore === undefined) {
+                        state.highestReportedScore = state.totalScore;
+                    }
+                    state.version = SAVE_VERSION;
+                    
+                    currentEquip = normalizeEquip(decoded.equip);
+                    
                     saveGame();
                     showCustomAlert("データを読み込みました！", () => {
                         location.reload();
@@ -1365,13 +1402,17 @@
 
         state.totalScore = inputVal;
         state.lastReportTime = now;
-        state.reportCount++;
-        
-        const earnedCoins = 200 + (state.reportCount * 50);
-        const earnedAffection = 10;
 
-        state.coins += earnedCoins;
-        state.affection += earnedAffection;
+        if (inputVal > state.highestReportedScore) {
+            state.highestReportedScore = inputVal;
+            state.reportCount++;
+            
+            const earnedCoins = 200 + (state.reportCount * 50);
+            const earnedAffection = 10;
+
+            state.coins += earnedCoins;
+            state.affection += earnedAffection;
+        }
 
         if (isOverwork) {
             setLancelotMessage("……本当か？いくら団長でもそのペースは信じがたい。無理をして倒れては元も子もないぞ、絶対に休むんだ。");
@@ -1420,24 +1461,30 @@
         type();
     }
 
+    function updateCooldownUI() {
+        const now = Date.now();
+        const diff = COOLDOWN_MS - (now - state.lastReportTime);
+        
+        if (state.lastReportTime === 0 || diff <= 0) {
+            document.getElementById('cooldown-text').innerText = "報告可能です！";
+            document.getElementById('btn-report').disabled = false;
+            if (timerInterval) clearInterval(timerInterval);
+        } else {
+            const min = Math.floor(diff / 1000 / 60);
+            const sec = Math.floor((diff / 1000) % 60);
+            document.getElementById('cooldown-text').innerText = `次の報告まで: ${min}分 ${sec}秒`;
+            document.getElementById('btn-report').disabled = true;
+        }
+    }
+
     function startCooldownTimer() {
         if(timerInterval) clearInterval(timerInterval);
         
-        timerInterval = setInterval(() => {
-            const now = Date.now();
-            const diff = COOLDOWN_MS - (now - state.lastReportTime);
-            
-            if (state.lastReportTime === 0 || diff <= 0) {
-                document.getElementById('cooldown-text').innerText = "報告可能です！";
-                document.getElementById('btn-report').disabled = false;
-                clearInterval(timerInterval);
-            } else {
-                const min = Math.floor(diff / 1000 / 60);
-                const sec = Math.floor((diff / 1000) % 60);
-                document.getElementById('cooldown-text').innerText = `次の報告まで: ${min}分 ${sec}秒`;
-                document.getElementById('btn-report').disabled = true;
-            }
-        }, 1000);
+        updateCooldownUI();
+        
+        if (state.lastReportTime !== 0 && (COOLDOWN_MS - (Date.now() - state.lastReportTime)) > 0) {
+            timerInterval = setInterval(updateCooldownUI, 1000);
+        }
     }
 
     function startGame() {
