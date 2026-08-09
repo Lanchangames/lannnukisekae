@@ -174,6 +174,7 @@
             overflow-y: auto; 
             max-height: 400px; 
             padding-right: 5px;
+            min-height: 0;
         }
 
         /* ----- ボタンデザイン----- */
@@ -349,6 +350,8 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            flex: 1;
+            min-height: 0;
         }
 
         #ui-area.show-top #section-room, 
@@ -444,6 +447,14 @@
         .shop-area {
             border-top: none; 
         }
+        #section-room .shop-area, 
+        #section-shop .shop-area:last-child {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+        
         .shop-category {
             margin-bottom: 15px;
             background: #f8fafc;
