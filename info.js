@@ -27,7 +27,7 @@ const infoContentHTML = `
         <br>
         <strong>【クローゼット】</strong><br>
         ショップで解放したアイテムを使って、自由に着せ替えを楽しめます。<br>
-　　　　　・アクセサリーは同時に複数つけることができ、着用中のアイテムを再度タップすると外せます。<br>
+        ・アクセサリーは同時に複数つけることができ、着用中のアイテムを再度タップすると外せます。<br>
     </p>
 
     <h2>データ</h2>
@@ -56,14 +56,14 @@ const infoContentHTML = `
     <h2>クレジット</h2>
     <p>
         【制作】<br>
-        ろかス（@mhks_dora）<br>
+        ろかス（@mhks_dora）<br><br>
         【イラスト】<br>
         水田しち様（@muzta7chi）<br>
         スライム様（@luminous_slime）<br>
         まりもんど様（@marimondo）<br>
         山田せろり様（@sayaenndoo）<br>
         二次元番長様（@zbbbancyo）<br>
-　　　　　ろカス<br>
+        ろカス<br>
         ※順不同にて失礼いたします。<br>
         イラストを提供してくださった皆様に、この場をお借りして感謝の意と最大の敬意を表します。
     </p>
