@@ -117,7 +117,7 @@
             margin-top: 0;
         }
 
-        /* ----- 画面の基本骨格 ----- */
+        /* 画面の基本骨格  */
         #game-container {
             display: flex;
             flex-direction: column; 
@@ -177,7 +177,7 @@
             min-height: 0;
         }
 
-        /* ----- ボタンデザイン----- */
+        /* ボタンデザイン　*/
         button {
             padding: 10px 20px;
             background-color: var(--primary);
@@ -204,7 +204,7 @@
             transform: none;
         }
 
-        /* ----- 大タブ ----- */
+        /*  大タブ  */
         #main-nav {
             display: flex;
             width: 100%;
@@ -232,7 +232,7 @@
             color: white;
         }
 
-        /* ----- 小タブ----- */
+        /*  小タブ */
         #sub-nav {
             display: none;
             width: 100%;
@@ -269,7 +269,7 @@
             box-shadow: none !important;
         }
 
-        /* ----- カテゴリタブ ----- */
+        /*  カテゴリタブ  */
         .cat-tabs-wrapper {
             display: flex;
             width: 100%;
@@ -298,7 +298,7 @@
             color: var(--accent);
         }
 
-        /* ----- サブカテゴリ ----- */
+        /*  サブカテゴリ  */
         .sub-cat-tabs-wrapper {
             display: none;
             width: 100%;
@@ -345,7 +345,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
-        /* ----- 各セクションの表示制御 ----- */
+        /*  各セクションの表示制御  */
         #section-top, #section-room, #section-shop, #section-data {
             display: flex;
             flex-direction: column;
@@ -465,7 +465,7 @@
         h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
         h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; }
         
-        /* ----- カード形式アイテム一覧用のCSS追加 ----- */
+        /* カード形式アイテム一覧用のCSS */
         .item-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -535,7 +535,7 @@
             pointer-events: none;
         }
         
-        /* 視認性を高めたアイテムボタンと装備中ボタン (既存のスタイル・プレビュー等一部で使用) */
+        /* アイテムボタン */
         .item-btn, .equip-btn {
             margin: 4px;
             font-size: 13px;
@@ -671,13 +671,14 @@
 </head>
 <body>
 
-<!-- スタート画面（ロゴを復活配置） -->
+<!-- スタート画面-->
 <div id="start-screen">
     <div id="start-box">
         <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
         <p style="line-height: 1.6; margin-bottom: 25px; font-size: 15px; color: #555;">
             古戦場の累計貢献度を報告してコインを獲得し、<br>
             アイテムを解放して自由に着せ替えを楽しもう！<br>
+            ※この画面の『ホーム画面へ追加』を強く推奨します。<br>
             
             <img src="avatar.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
@@ -747,7 +748,7 @@
                     <input type="number" id="input-score" placeholder="現在の累計貢献度を入力">
                     <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
                         <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;">報告する</button>
-                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br><span style="font-size:10px;">（コイン無）</span></button>
+                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br><span style="font-size:10px;">（コインは増加しません。）</span></button>
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
@@ -826,8 +827,10 @@
                     
                     <div style="font-size: 13px; line-height: 1.6; margin-bottom: 20px; color: #555;">
                         <strong>【データの取り扱いについて】</strong><br>
-                        当アプリのセーブデータは、お使いのブラウザのローカルストレージ（端末内）にのみ保存され、外部サーバ等への送信は一切行われません。<br>
-                        ブラウザの履歴やキャッシュを削除した場合、またはシークレットモードを利用した場合はデータが消去されてしまうため、定期的な「データ出力」によるバックアップをおすすめします。
+                        当アプリのセーブデータは、お使いのブラウザのローカルストレージ（端末内）にのみ保存され、外部サーバ等への送信は一切行われません。<br><br>
+                        ブラウザの履歴やキャッシュを削除した場合、またはシークレットモードを利用した場合はデータが消去されてしまいます。<br><br>
+                        データ出力を行うと、セーブデータや消えた際や端末引き継ぎの際に同コードをペーストすることで、データの復元が可能です。定期的なデータ出力によるバックアップをおすすめします。<br><br>
+                        また、事故防止のためiOS版をお使いの場合は『ホーム画面に追加』機能の利用を推奨します。
                     </div>
 
                     <div style="display: flex; gap: 10px;">
@@ -1512,7 +1515,7 @@
         }
 
         if (isOverwork) {
-            setLancelotMessage("……本当か？いくら団長でもそのペースは信じがたい。無理をして倒れては元も子もないぞ、絶対に休むんだ。");
+            setLancelotMessage("……本当か？いくら団長でもそのペースは信じがたい。無理をして倒れては元も子もないぞ、適度な休息が必要だ。。");
         } else {
             const maxScore = 20000000000;
             const rank = Math.min(29, Math.floor((state.totalScore / maxScore) * 30));
@@ -1586,7 +1589,7 @@
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
-        setLancelotMessage("お疲れさま。今日も古戦場を走るんだな。\n報告を待っているぞ。");
+        setLancelotMessage("お疲れさま。古戦場へ行くんだな。\n報告を待っているぞ。");
     }
 
     ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(cat => {
