@@ -177,7 +177,7 @@
             min-height: 0;
         }
 
-        /* ボタンデザイン　*/
+        /* ボタンデザイン */
         button {
             padding: 10px 20px;
             background-color: var(--primary);
@@ -1515,6 +1515,10 @@
 
         if (isOverwork) {
             setLancelotMessage("……本当か？いくら団長でもそのペースは信じがたい。無理をして倒れては元も子もないぞ、適度な休息が必要だ。。");
+        } else if (state.totalScore >= 50000000000) {
+            setLancelotMessage("信じられない記録だな。団長は本当に誇り高き戦士だ。白竜騎士団も見習わないとな。だが、倒れる前にしっかり休んでくれよ！");
+        } else if (state.totalScore >= 30000000000) {
+            setLancelotMessage("すさまじい戦果だ！団長の頑張りには頭が下がる思いだよ。英雄を目指しているのか？引き続き応援しているぞ。");
         } else {
             const maxScore = 20000000000;
             const rank = Math.min(29, Math.floor((state.totalScore / maxScore) * 30));
