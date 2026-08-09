@@ -1080,6 +1080,7 @@
             let price = 500;
             if (previewTarget.type === 'bg') price = 200;
             if (previewTarget.type === 'acc') price = 300;
+            if (previewTarget.type === 'tops' || previewTarget.type === 'bottoms') price = 250;
             previewBtn.disabled = state.coins < price;
         }
     }
@@ -1403,6 +1404,7 @@
         let price = 500;
         if (item.type === 'bg') price = 200;
         if (item.type === 'acc') price = 300;
+        if (item.type === 'tops' || item.type === 'bottoms') price = 250;
         
         document.getElementById('preview-name').innerText = item.name;
         if (state.coins < price) {
@@ -1423,6 +1425,7 @@
         let price = 500;
         if(previewTarget.type === 'bg') price = 200;
         if(previewTarget.type === 'acc') price = 300;
+        if(previewTarget.type === 'tops' || previewTarget.type === 'bottoms') price = 250;
         
         if (state.coins < price) return;
         
@@ -1518,10 +1521,16 @@
         } else if (state.totalScore >= 50000000000) {
             setLancelotMessage("信じられない記録だな。団長は本当に誇り高き戦士だ。白竜騎士団も見習わないとな。だが、倒れる前にしっかり休んでくれよ！");
         } else if (state.totalScore >= 30000000000) {
-            setLancelotMessage("すさまじい戦果だ！団長の頑張りには頭が下がる思いだよ。英雄を目指しているのか？引き続き応援しているぞ。");
+            setLancelotMessage("すさまじい戦果だ！団長の頑張りには頭が下がる思いだよ。英雄となった団長を見届けるため、引き続き応援しているぞ。");
+        } else if (state.totalScore >= 20000000000) {
+            setLancelotMessage("200億到達おめでとう！もしかして古戦場の英雄を目指しているのか？素晴らしい団長に付いて行けて光栄だ。");
+        } else if (state.totalScore >= 15000000000) {
+            setLancelotMessage("150億到達おめでとう！途方のない数字だな。俺も身が引き締まる思いだよ。団長は古戦場が好きなんだな。");
+        } else if (state.totalScore >= 10000000000) {
+            setLancelotMessage("100億到達おめでとう！俺が初めて騎空艇に乗った時だと考えられない数字だな。適度に休憩を取るんだぞ。");
         } else {
-            const maxScore = 20000000000;
-            const rank = Math.min(29, Math.floor((state.totalScore / maxScore) * 30));
+            const maxScore = 8000000000;
+            const rank = Math.min(39, Math.floor((state.totalScore / maxScore) * 40));
             setLancelotMessage(msgsProgress[rank]);
         }
 
