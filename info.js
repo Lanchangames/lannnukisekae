@@ -23,6 +23,7 @@ const infoContentHTML = `
     <p>
         <strong>【ショップ】</strong><br>
         貯まったコインを使ってアイテムを解放できます。<br>
+        必要なコイン数はカテゴリにより異なります。<br>
         <br>
         <strong>【クローゼット】</strong><br>
         ショップで解放したアイテムを使って、自由に着せ替えを楽しめます。<br>
