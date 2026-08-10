@@ -48,7 +48,7 @@ const infoContentHTML = `
         
     </p>
     <p style="text-align: center; margin-top: 20px;">
-        <a href="https://x.com/mhks_dora/status/2082801864761016513" target="_blank" style="text-decoration: none;">
+        <a href="https://marshmallow-qa.com/oj0afz3donoawsc" target="_blank" style="text-decoration: none;">
             <button style="font-size: 18px; padding: 12px 40px; background-color: var(--accent);">気軽に送ってね</button>
         </a>
     </p>
