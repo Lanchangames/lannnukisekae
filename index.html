@@ -749,6 +749,9 @@
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
+                
+                <!-- Xでシェア ボタンを追加 -->
+                <button onclick="shareOnX()" style="background-color: #0f1419; margin-top: 5px;">Xでシェア</button>
             </div>
 
             <!-- クローゼット画面の要素 -->
@@ -1024,7 +1027,7 @@
                 showCustomAlert("バックアップコードを出力し、クリップボードにコピーしました！\n機種変更時などのためにメモ帳等に保存してください。");
             }
         } catch (e) {
-            showCustomAlert("コードの出力に失敗しました。表示されたコードを手動でコピーしてください。");
+            showCustomAlert("コードの出力に失敗しました。表示されたコードを手持動でコピーしてください。");
         }
     }
 
@@ -1528,7 +1531,7 @@
             setLancelotMessage("100億到達おめでとう！俺が初めて騎空艇に乗った時だと考えられない数字だな。適度に休憩を取るんだぞ。");
         } else {
             const maxScore = 8000000000;
-            const rank = Math.min(39, Math.floor((state.totalScore / maxScore) * 40));
+            const rank = Math.min(40, Math.floor((state.totalScore / maxScore) * 40));
             setLancelotMessage(msgsProgress[rank]);
         }
 
@@ -1600,6 +1603,13 @@
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
         setLancelotMessage("団長、お疲れさま。古戦場へ行くんだな。\n報告を待っているぞ。");
+    }
+
+    function shareOnX() {
+        const scoreStr = state.totalScore.toLocaleString();
+        const text = `古戦場お疲れ様。今の団長の貢献度は${scoreStr}だぞ。少し俺と休憩していかないか？`;
+        const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
     }
 
     ['setup', 'tops', 'bottoms', 'acc', 'bg'].forEach(cat => {
