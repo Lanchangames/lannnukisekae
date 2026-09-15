@@ -1174,11 +1174,11 @@
             
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(encoded);
-                showCustomAlert("バックアップコードをクリップボードにコピーしました！\n長くてすまない、メモ帳等に保存してくれ。");
+                showCustomAlert("バックアップコードをクリップボードにコピーしたぞ！\n長くてすまない、メモ帳等に保存してくれ。");
             } else {
                 textarea.select();
                 document.execCommand('copy');
-                showCustomAlert("バックアップコードをクリップボードにコピーしました！\n長くてすまない、メモ帳等に保存してくれ。");
+                showCustomAlert("バックアップコードをクリップボードにコピーしたぞ！\n長くてすまない、メモ帳等に保存してくれ。");
             }
         } catch (e) {
             showCustomAlert("コードの出力に失敗しました。表示されたコードを手動でコピーしてください。");
