@@ -180,7 +180,7 @@
             flex-direction: column;
             gap: 15px;
             padding-right: 10px;
-            min-height: 0;  /* Important for inner scroll */
+            min-height: 0;
         }
 
         #unlocked-list, #locked-list {
@@ -1288,7 +1288,7 @@
             if (previewTarget.type === 'bg') price = 200;
             if (previewTarget.type === 'acc') price = 150;
             if (previewTarget.type === 'tops' || previewTarget.type === 'bottoms') price = 250;
-            previewBtn.disabled = state.coins < price;
+            previewBtn.disabled = false;
         }
     }
 
@@ -1524,7 +1524,7 @@
             notice.style.color = '#e74c3c';
             notice.style.fontWeight = 'bold';
             notice.style.margin = '0 0 10px 0';
-            notice.innerText = '※アクセサリーは複数つけることができます。タップでつけ外しが可能です。';
+            notice.innerText = '※アクセサリーは複数つけることができるぞ。タップでつけ外しが可能だ。';
             catUnlocked.appendChild(notice);
         }
         
@@ -1840,7 +1840,7 @@
         
         const buyBtn = document.getElementById('btn-buy-preview');
         buyBtn.innerText = `${price}コインで解放`;
-        buyBtn.disabled = state.coins < price;
+        buyBtn.disabled = false;
     }
 
     function buyPreviewItem() {
@@ -1851,7 +1851,10 @@
         if(previewTarget.type === 'acc') price = 150;
         if(previewTarget.type === 'tops' || previewTarget.type === 'bottoms') price = 250;
         
-        if (state.coins < price) return;
+        if (state.coins < price) {
+            showCustomAlert("コインが不足しているぞ！");
+            return;
+        }
                 
         state.coins -= price;
         state.unlocked[previewTarget.id] = true;
