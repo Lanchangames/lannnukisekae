@@ -1841,7 +1841,7 @@
         if (FREE_GIFT_IDS.includes(item.id)) price = 0;
         
         const buyBtn = document.getElementById('btn-buy-preview');
-        buyBtn.innerText = FREE_GIFT_IDS.includes(item.id) ? '俺からのプレゼントだ' : `${price}コインで解放`;
+        buyBtn.innerText = FREE_GIFT_IDS.includes(item.id) ? '俺からのプレゼントだ！' : `${price}コインで解放`;
         buyBtn.disabled = false;
     }
 
