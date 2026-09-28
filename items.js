@@ -112,6 +112,7 @@ const ITEM_DB = {
         { id: 'tops53', name: 'paradise sweets Tシャツ', file: 'tops_53.png', type: 'tops' },
         { id: 'tops54', name: 'ビームが出たセーター', file: 'tops_54.png', type: 'tops' },
         { id: 'tops55', name: 'ビームが出たセーター2', file: 'tops_55.png', type: 'tops' },
+        { id: 'tops56', name: 'ルオーのTシャツ', file: 'tops_56.png', type: 'tops' },
     ],
     bottoms: [
         { id: 'bottoms1', name: 'じーぱん', file: 'bottoms_1.png', type: 'bottoms' },
@@ -396,8 +397,9 @@ const ITEM_DB = {
         { id: 'acc244', name: 'ショートジャケット', file: 'acc_244.png', type: 'acc' },
         { id: 'acc245', name: 'コック帽', file: 'acc_245.png', type: 'acc' },
         { id: 'acc246', name: 'ジークマンお面', file: 'acc_246.png', type: 'acc' },
-    　　{ id: 'acc247', name: '袴', file: 'acc_247.png', type: 'acc' },
-    　　{ id: 'acc248', name: 'ヒールブーツ', file: 'acc_248.png', type: 'acc' },
+    　 　{ id: 'acc247', name: '袴', file: 'acc_247.png', type: 'acc' },
+    　 　{ id: 'acc248', name: 'ヒールブーツ', file: 'acc_248.png', type: 'acc' },
+        { id: 'acc249', name: 'ルオーのつの', file: 'acc_249.png', type: 'acc' },
     ],
     bg: [
         { id: 'bg1', name: 'ブルー', file: 'bg_1.png', type: 'bg' },
@@ -492,5 +494,7 @@ const ITEM_DB = {
         { id: 'bg90', name: 'モザイク', file: 'bg_90.png', type: 'bg' },
         { id: 'bg91', name: 'きけん', file: 'bg_91.png', type: 'bg' },
         { id: 'bg92', name: 'いなずま', file: 'bg_92.png', type: 'bg' },
+        { id: 'bg93', name: '第84回古戦場', file: 'bg_93.png', type: 'bg' },
+        { id: 'bg94', name: 'でかいおれとおれ', file: 'bg_94.png', type: 'bg' },
     ]
 };
