@@ -816,13 +816,15 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="number" id="input-score" placeholder="現在の累計貢献度を入力" onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();">
+                    <input type="number" id="input-score" placeholder="現在の累計貢献度を入力" onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();" disabled>
                     <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
-                        <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;">報告する</button>
-                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br><span style="font-size:10px;">（コインは増加しません。）</span></button>
+                        <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;" disabled>報告する</button>
+                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;" disabled>貢献度修正<br><span style="font-size:10px;">（コインは増加しません。）</span></button>
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
+                <button id="meat-mode-entry" onclick="openMeatMode()" style="width: 100%;">🥩 肉集めモード</button>
+                <div id="meat-mode-panel" style="display: none;"></div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 10px;">
                     <button onclick="shareOnX()" style="background-color: #0f1419; flex: 1;">Xでシェア</button>
@@ -926,6 +928,7 @@
 <script src="items.js"></script>
 <script src="messages.js"></script>
 <script src="info.js"></script>
+<script src="meat.js"></script>
 <script>
     function showInfo() {
         document.getElementById('info-modal').style.display = 'flex';
@@ -969,7 +972,7 @@
     let equipOrder = [];
 
     const SAVE_VERSION = 1;
-    const INITIAL_COINS = 1000;
+    const INITIAL_COINS = 2000;
     const FREE_GIFT_IDS = ['tops56', 'acc249', 'bg93', 'bg94'];
 
     const defaultState = {
@@ -982,7 +985,14 @@
         highestReportedScore: 0,
         lastLoginTime: 0,
         unlocked: {},
-        hasReceivedSecretPresent: false
+        hasReceivedSecretPresent: false,
+        meatTotal: 0,
+        highestMeatTotal: 0,
+        meatReportCount: 0,
+        meatRewardReceived: {},
+        meatCollection: {},
+        meatGiftCount: 0,
+        meatBoxProgress: 0
     };
 
     let state = { ...defaultState, unlocked: {} };
@@ -2111,19 +2121,10 @@
     }
 
     function updateCooldownUI() {
-        const now = Date.now();
-        const diff = COOLDOWN_MS - (now - state.lastReportTime);
-        
-        if (state.lastReportTime === 0 || diff <= 0) {
-            document.getElementById('cooldown-text').innerText = "報告可能だぞ！";
-            document.getElementById('btn-report').disabled = false;
-            if (timerInterval) clearInterval(timerInterval);
-        } else {
-            const min = Math.floor(diff / 1000 / 60);
-            const sec = Math.floor((diff / 1000) % 60);
-            document.getElementById('cooldown-text').innerText = `次の報告まで: ${min}分 ${sec}秒`;
-            document.getElementById('btn-report').disabled = true;
-        }
+        document.getElementById('input-score').disabled = true;
+        document.getElementById('btn-report').disabled = true;
+        document.getElementById('btn-fix').disabled = true;
+        document.getElementById('cooldown-text').innerText = "古戦場開始後に貢献度を報告できるようになります。";
     }
 
     function startCooldownTimer() {
@@ -2329,6 +2330,7 @@
     updateUI();
     renderItems();
     startCooldownTimer();
+    initMeatMode();
 
     if (typeof infoContentHTML !== 'undefined') {
         document.getElementById('info-content').innerHTML = infoContentHTML;
