@@ -1,6 +1,8 @@
 (() => {
     const MEAT_BOX_STEP = 200;
     const MEAT_MAX_TOTAL = 1000000;
+    const MEAT_COOLDOWN_MS = 15 * 60 * 1000;
+    let meatTimerInterval = null;
 
     const MEAT_PICKUPS = [
         { id: 'sandwich', name: 'サンドイッチ', weight: 7.5, rarity: 'common', img: 'lancelot_1.png', msg: '腹ごしらえにはちょうどよさそうだな。肉集めの途中で食べてしまわないようにな。' },
@@ -50,6 +52,7 @@
         if (!state.meatCollection || typeof state.meatCollection !== 'object' || Array.isArray(state.meatCollection)) state.meatCollection = {};
         if (!Number.isSafeInteger(state.meatGiftCount) || state.meatGiftCount < 0) state.meatGiftCount = 0;
         if (!Number.isSafeInteger(state.meatBoxProgress) || state.meatBoxProgress < 0) state.meatBoxProgress = 0;
+        if (!Number.isSafeInteger(state.meatLastReportTime) || state.meatLastReportTime < 0) state.meatLastReportTime = 0;
         state.meatBoxProgress %= MEAT_BOX_STEP;
     }
 
@@ -70,6 +73,61 @@
             if (found) return found;
         }
         return null;
+    }
+
+    function syncMeatEntryButtonWidth() {
+        const entry = document.getElementById('meat-mode-entry');
+        const reportButton = document.getElementById('btn-report');
+        if (!entry || !reportButton) return;
+
+        const width = reportButton.getBoundingClientRect().width;
+        if (width > 0) entry.style.width = `${width}px`;
+    }
+
+    function getMeatCooldownRemaining() {
+        if (!state.meatLastReportTime) return 0;
+        return Math.max(0, MEAT_COOLDOWN_MS - (Date.now() - state.meatLastReportTime));
+    }
+
+    function updateMeatCooldownUI() {
+        const button = document.getElementById('btn-meat-report');
+        const text = document.getElementById('meat-cooldown-text');
+        if (!button || !text) return;
+
+        const remaining = getMeatCooldownRemaining();
+        if (remaining <= 0) {
+            button.disabled = false;
+            text.innerText = '肉を報告できるぞ！';
+            if (meatTimerInterval) {
+                clearInterval(meatTimerInterval);
+                meatTimerInterval = null;
+            }
+            return;
+        }
+
+        const min = Math.floor(remaining / 1000 / 60);
+        const sec = Math.floor((remaining / 1000) % 60);
+        button.disabled = true;
+        text.innerText = `次の肉報告まで: ${min}分 ${sec}秒`;
+    }
+
+    function startMeatCooldownTimer() {
+        if (meatTimerInterval) {
+            clearInterval(meatTimerInterval);
+            meatTimerInterval = null;
+        }
+
+        updateMeatCooldownUI();
+        if (getMeatCooldownRemaining() > 0) {
+            meatTimerInterval = setInterval(updateMeatCooldownUI, 1000);
+        }
+    }
+
+    function stopMeatCooldownTimer() {
+        if (meatTimerInterval) {
+            clearInterval(meatTimerInterval);
+            meatTimerInterval = null;
+        }
     }
 
     function getCollectionUniqueCount() {
@@ -238,8 +296,10 @@
 
                 <div class="input-group">
                     <input type="number" id="input-meat" placeholder="現在の累計肉数を入力" onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();">
-                    <button onclick="reportMeat()" style="min-width:130px;">肉を報告する</button>
+                    <button id="btn-meat-report" onclick="reportMeat()" style="min-width:130px;">肉を報告する</button>
                 </div>
+
+                <div id="meat-cooldown-text" style="color:#c0392b; font-size:13px; font-weight:bold; min-height:20px; display:flex; align-items:center;"></div>
 
                 <div style="font-size:12px; color:#64748b; line-height:1.6;">
                     肉${MEAT_BOX_STEP}個増加ごとに、肉集め中の拾いものを1回抽選します。<br>
@@ -253,6 +313,9 @@
                     <div>${obtained || '<span style="font-size:12px; color:#64748b;">まだ何も拾っていないぞ。</span>'}</div>
                 </div>
             </div>`;
+
+        syncMeatEntryButtonWidth();
+        updateMeatCooldownUI();
     }
 
     function openMeatMode() {
@@ -271,8 +334,10 @@
         if (cooldown) cooldown.style.display = 'none';
         if (entry) entry.style.display = 'none';
         if (panel) panel.style.display = 'flex';
+        sectionTop.style.backgroundColor = '#fff2f2';
 
         renderMeatPanel();
+        startMeatCooldownTimer();
         setMeatLancelotMessage('肉集めの報告だな。今日は何が見つかるだろうな？', 'lancelot_1.png');
     }
 
@@ -291,6 +356,9 @@
         if (cooldown) cooldown.style.display = '';
         if (entry) entry.style.display = '';
         if (panel) panel.style.display = 'none';
+        sectionTop.style.backgroundColor = '';
+        stopMeatCooldownTimer();
+        syncMeatEntryButtonWidth();
 
         updateCooldownUI();
         setMeatLancelotMessage('貢献度の報告に戻るんだな。了解したぞ、団長。', 'lancelot_1.png');
@@ -313,6 +381,14 @@
             return;
         }
 
+        const cooldownRemaining = getMeatCooldownRemaining();
+        if (cooldownRemaining > 0) {
+            const remainMin = Math.ceil(cooldownRemaining / 1000 / 60);
+            setMeatLancelotMessage(`少し休憩したらどうだ？ 次の肉報告まであと ${remainMin} 分だ。`, 'lancelot_1.png');
+            updateMeatCooldownUI();
+            return;
+        }
+
         if (inputVal < state.meatTotal) {
             setMeatLancelotMessage('団長、肉が減っているようだが……食べたのか？', 'lancelot_5.png');
             return;
@@ -328,6 +404,7 @@
         state.meatTotal = inputVal;
         state.highestMeatTotal = Math.max(state.highestMeatTotal, inputVal);
         state.meatReportCount++;
+        state.meatLastReportTime = Date.now();
 
         const progressTotal = state.meatBoxProgress + diff;
         const drawCount = Math.floor(progressTotal / MEAT_BOX_STEP);
@@ -388,6 +465,7 @@
         updateUI();
         saveGame();
         renderMeatPanel({ lines: resultLines });
+        startMeatCooldownTimer();
 
         if (milestoneResult.lastMessage) {
             setMeatLancelotMessage(milestoneResult.lastMessage, milestoneResult.lastImage || 'lancelot_1.png');
@@ -402,7 +480,10 @@
     function initMeatMode() {
         ensureMeatState();
         renderMeatPanel();
+        syncMeatEntryButtonWidth();
     }
+
+    window.addEventListener('resize', syncMeatEntryButtonWidth);
 
     window.initMeatMode = initMeatMode;
     window.openMeatMode = openMeatMode;
