@@ -820,10 +820,10 @@
                     <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
                         <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;" disabled>報告する</button>
                         <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;" disabled>貢献度修正<br><span style="font-size:10px;">（コインは増加しません。）</span></button>
+                        <button id="meat-mode-entry" onclick="openMeatMode()" style="width: 100%; height: 100%; background-color: #c0392b;">🥩 肉集めモード</button>
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
-                <button id="meat-mode-entry" onclick="openMeatMode()" style="background-color: #c0392b; align-self: flex-end;">🥩 肉集めモード</button>
                 <div id="meat-mode-panel" style="display: none;"></div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 10px;">
@@ -1618,7 +1618,7 @@
 
         if (typeof ITEM_DB !== 'undefined' && ITEM_DB[category]) {
             ITEM_DB[category].forEach(item => {
-                if (!state.unlocked[item.id]) {
+                if (!state.unlocked[item.id] && !item.meatRewardOnly) {
                     const card = document.createElement('div');
                     card.className = 'item-card';
                     card.onclick = () => showPreview(item);
