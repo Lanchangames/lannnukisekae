@@ -847,6 +847,13 @@
                         <div class="sub-cat-tab-item" id="tab-bottoms-room" onclick="changeRoomTab('bottoms')">ボトムス</div>
                     </div>
 
+                    <div class="sub-cat-tabs-wrapper" id="room-acc-tabs" style="display: none;">
+                        <div class="sub-cat-tab-item active" id="acc-head-room" onclick="changeRoomAccTab('head')">頭</div>
+                        <div class="sub-cat-tab-item" id="acc-hand-room" onclick="changeRoomAccTab('hand')">手</div>
+                        <div class="sub-cat-tab-item" id="acc-foot-room" onclick="changeRoomAccTab('foot')">足</div>
+                        <div class="sub-cat-tab-item" id="acc-other-room" onclick="changeRoomAccTab('other')">その他</div>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: -5px; margin-bottom: 10px;">
                         <p style="font-size: 12px; color: #666; margin: 0;">※着用中のアイテムを再度押すと外せます</p>
                         <button onclick="randomEquip()" style="
@@ -876,6 +883,13 @@
                     <div class="sub-cat-tab-item active" id="tab-setup-shop" onclick="changeShopTab('setup')">セットアップ</div>
                     <div class="sub-cat-tab-item" id="tab-tops-shop" onclick="changeShopTab('tops')">トップス</div>
                     <div class="sub-cat-tab-item" id="tab-bottoms-shop" onclick="changeShopTab('bottoms')">ボトムス</div>
+                </div>
+
+                <div class="sub-cat-tabs-wrapper" id="shop-acc-tabs" style="display: none;">
+                    <div class="sub-cat-tab-item active" id="acc-head-shop" onclick="changeShopAccTab('head')">頭</div>
+                    <div class="sub-cat-tab-item" id="acc-hand-shop" onclick="changeShopAccTab('hand')">手</div>
+                    <div class="sub-cat-tab-item" id="acc-foot-shop" onclick="changeShopAccTab('foot')">足</div>
+                    <div class="sub-cat-tab-item" id="acc-other-shop" onclick="changeShopAccTab('other')">その他</div>
                 </div>
 
                 <div class="shop-area">
@@ -1004,9 +1018,11 @@
     
     let currentRoomCategory = 'clothes';
     let currentRoomTab = 'setup';
+    let currentRoomAccTab = 'head';
     
     let currentShopCategory = 'clothes';
     let currentShopTab = 'setup';
+    let currentShopAccTab = 'head';
 
     const COOLDOWN_MS = 15 * 60 * 1000;
     let previewTarget = null;
@@ -1482,6 +1498,7 @@
         document.getElementById(`cat-${cat}-room`).classList.add('active');
         
         const subTabs = document.getElementById('room-sub-tabs');
+        document.getElementById('room-acc-tabs').style.display = cat === 'acc' ? 'flex' : 'none';
         if (cat === 'clothes') {
             subTabs.style.display = 'flex';
             renderRoomItems(currentRoomTab);
@@ -1498,12 +1515,20 @@
         renderRoomItems(tab);
     }
 
+    function changeRoomAccTab(tab) {
+        currentRoomAccTab = tab;
+        document.querySelectorAll('#room-acc-tabs .sub-cat-tab-item').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`acc-${tab}-room`).classList.add('active');
+        renderRoomItems('acc');
+    }
+
     function changeShopCategory(cat) {
         currentShopCategory = cat;
         document.querySelectorAll('#shop-category-tabs .cat-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`cat-${cat}-shop`).classList.add('active');
         
         const subTabs = document.getElementById('shop-sub-tabs');
+        document.getElementById('shop-acc-tabs').style.display = cat === 'acc' ? 'flex' : 'none';
         if (cat === 'clothes') {
             subTabs.style.display = 'flex';
             renderShopItems(currentShopTab);
@@ -1518,6 +1543,13 @@
         document.querySelectorAll('#shop-sub-tabs .sub-cat-tab-item').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tab}-shop`).classList.add('active');
         renderShopItems(tab);
+    }
+
+    function changeShopAccTab(tab) {
+        currentShopAccTab = tab;
+        document.querySelectorAll('#shop-acc-tabs .sub-cat-tab-item').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`acc-${tab}-shop`).classList.add('active');
+        renderShopItems('acc');
     }
 
     function renderRoomItems(targetCategory) {
@@ -1560,7 +1592,7 @@
         defImg.innerText = 'OFF';
         
         const defText = document.createElement('span');
-        defText.innerText = category === 'acc' ? '何もつけない' : 'デフォルト';
+        defText.innerText = category === 'acc' ? 'アクセサリーを全て外す' : 'デフォルト';
         
         defBtn.appendChild(defImg);
         defBtn.appendChild(defText);
@@ -1568,6 +1600,7 @@
 
         if (typeof ITEM_DB !== 'undefined' && ITEM_DB[category]) {
             ITEM_DB[category].forEach(item => {
+                if (category === 'acc' && (item.accGroup || 'other') !== currentRoomAccTab) return;
                 if (state.unlocked[item.id]) {
                     const isEquipped = category === 'acc' 
                         ? currentEquip.acc.includes(item.file)
@@ -1619,6 +1652,7 @@
 
         if (typeof ITEM_DB !== 'undefined' && ITEM_DB[category]) {
             ITEM_DB[category].forEach(item => {
+                if (category === 'acc' && (item.accGroup || 'other') !== currentShopAccTab) return;
                 if (!state.unlocked[item.id] && !item.meatRewardOnly) {
                     const card = document.createElement('div');
                     card.className = 'item-card';
