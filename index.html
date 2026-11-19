@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ランぬのわくわく古戦場！</title>
+    <title>ランぬのわくわく古戦場！（旧バージョン）</title>
     
     <link rel="apple-touch-icon" href="avatar_2.png">
     
     <meta property="og:title" content="ランぬのわくわく古戦場！">
-    <meta property="og:description" content="古戦場貢献度を報告してランぬを着せ替えよう！">
+    <meta name="description" content="新バージョンが公開されています。データをバックアップして新バージョンで読み込んでください。">
+    <meta property="og:description" content="新バージョンが公開されています。データをバックアップして新バージョンで読み込んでください。">
     <meta property="og:image" content="https://lanchangame.github.io/wakuwakukosenjo/twitter.png">
     <meta property="og:url" content="https://lanchangame.github.io/wakuwakukosenjo/">
     
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="新バージョンが公開されています。データをバックアップして新バージョンで読み込んでください。">
     <meta name="twitter:image" content="https://lanchangame.github.io/wakuwakukosenjo/twitter.png">
 
     <style>
@@ -56,12 +58,6 @@
             width: 90%;
             max-width: 500px;
             box-sizing: border-box;
-        }
-        #logo-img {
-            max-width: 100%;
-            max-height: 160px;
-            margin-bottom: 20px;
-            object-fit: contain;
         }
 
         #info-modal {
@@ -728,16 +724,13 @@
 
 <div id="start-screen">
     <div id="start-box">
-        <img src="logo.png" alt="タイトルロゴ" id="logo-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiPjxyZWN0IHdpZHRoPSIyMTAiIGhlaWdodD0iNjAiIGZpbGw9IiNjY2MiLz48dGV4dCB4PSIxMDUiIHk9IjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMyI+bG9nby5wbmc8L3RleHQ+PC9zdmc+'">
-        <p style="line-height: 1.6; margin-bottom: 25px; font-size: 15px; color: #555;">
-            古戦場の累計貢献度を報告して<br>
-            着せ替えを楽しもう！<br>
-            
-            <img src="dsfdsd.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
+        <p style="line-height: 1.8; margin: 0 0 24px; font-size: 16px; color: #333;">
+            新バージョンが公開されています。<br>
+            データのバックアップを行い、新バージョンで読み込んでください。<br>
+            アップデート内容は旧バージョンでは遊べません。
         </p>
-        
-        <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: var(--accent);">はじめに読んでね</button><br>
-        <button onclick="startGame()" style="width: 260px; font-size: 18px; padding: 12px 0; background-color: var(--primary);">ゲームスタート</button>
+        <button onclick="openNewVersion()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: #dc2626;">新バージョンはこちら</button><br>
+        <button onclick="startGame()" style="width: 260px; font-size: 15px; padding: 11px 0; background-color: #64748b;">旧バージョンを開く（データバックアップ用）</button>
     </div>
 </div>
 
@@ -1039,6 +1032,17 @@
     let pokeTimer = null;
 
     let lastLoginAction = null;
+
+    // 新バージョン公開後、ここにURLを設定してください。
+    const NEW_VERSION_URL = '';
+
+    function openNewVersion() {
+        if (!NEW_VERSION_URL) {
+            alert('新バージョンのURLはまだ設定されていません。');
+            return;
+        }
+        window.location.href = NEW_VERSION_URL;
+    }
 
     const SAVE_KEY_STATE = 'kosenjo_save_state';
     const SAVE_KEY_EQUIP = 'kosenjo_save_equip';
